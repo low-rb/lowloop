@@ -20,6 +20,24 @@ After checking out the repo, run `bin/setup` to install dependencies. Then, run 
 
 To install this gem onto your local machine, run `bundle exec rake install`. To release a new version, update the version number in `version.rb`, and then run `bundle exec rake release`, which will create a git tag for the version, push git commits and the created tag, and push the `.gem` file to [rubygems.org](https://rubygems.org).
 
+## Debugging
+
+### Debug Mode [UNRELEASED]
+
+Set `LOW_DEBUG_MODE=1` to switch LowLoop to a non-asynchronous server which well you debug with standard methods such as:
+```ruby
+p var
+puts var
+binding.pry # Debug mode requires pry for you
+```
+
+### Async Mode
+
+`LOW_ASYNC_MODE=1` is the default. In this async environment we must first block the fiber:
+```ruby
+Fiber.blocking { binding.irb }
+```
+
 ## Contributing
 
 Bug reports and pull requests are welcome on GitHub at https://github.com/low-rb/low_loop.

@@ -7,8 +7,8 @@ require 'low_event'
 require 'observers'
 
 require_relative 'factories/response_factory'
-require_relative 'request_parser'
-require_relative 'response_builder'
+require_relative 'requests/request_parser'
+require_relative 'responses/response_builder'
 
 module Low
   class Loop
@@ -16,12 +16,14 @@ module Low
 
     attr_reader :config
 
-    def initialize(config:, router: nil)
+    def initialize(config:, dependencies: [])
       @config = config
 
+      dependencies.each do |dependency|
+        observers << dependency
+      end
+
       observers.push(self, action: :mirror) if config.mirror_mode
-      observers << FileServer.new
-      observers << router if router
     end
 
     def start
@@ -56,9 +58,10 @@ module Low
       server
     end
 
+    # Fallback mode for when there's no dependencies and you want to know that the server is still working.
     def mirror(event:)
       request = event.request
-      response = Events::ResponseFactory.response(body: "Thank you for visiting #{request.path} with body: '#{request.body}'")
+      response = ResponseFactory.html(body: "Thank you for visiting #{request.path} with body: '#{request.body}'")
       Events::ResponseEvent.new(response:)
     end
 

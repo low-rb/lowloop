@@ -7,6 +7,7 @@ gemspec
 
 group :development do
   gem 'low_event', path: '../low_event'
+  gem 'low_type', path: '../low_type'
   gem 'observers', path: '../observers'
 
   gem 'benchmark'

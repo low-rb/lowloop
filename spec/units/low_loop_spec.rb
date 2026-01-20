@@ -28,9 +28,8 @@ RSpec.describe LowLoop do
   end
 
   let(:request_event) { Low::Events::RequestEvent.new(request:) }
-  let(:request) { Low::RequestFactory.request(path: '/') }
-  let(:response) { Low::Events::ResponseFactory.response(body:) }
-  let(:body) { 'Hello' }
+  let(:request) { Low::Support::RequestFactory.request(path: '/') }
+  let(:response) { Low::ResponseFactory.html(body: 'Hi') }
 
   let(:endpoint) { "http://#{host}:#{port}" }
   let(:host) { '127.0.0.1' }
@@ -49,19 +48,16 @@ RSpec.describe LowLoop do
     allow(router).to receive(:handle).and_return(response_event(response:))
   end
 
-  describe '#initialize' do
-    it 'instantiates a class' do
-      expect { low_loop }.not_to raise_error
-    end
-  end
-
   context 'without event loop' do
     it 'responds to a request' do
       expect(low_loop.take(event: request_event)).to be_instance_of(Low::Events::ResponseEvent)
     end
   end
 
-  context 'with event loop' do
+  # TODO: Debugging is made easier when non-async so add a synchronous debug mode and test this.
+  # context 'when in debug mode (synchronous)'
+
+  context 'when in async mode (asynchronous)' do
     before(:all) do
       config = Struct.new(:host, :port, :matrix_mode, :mirror_mode)
 
@@ -82,8 +78,25 @@ RSpec.describe LowLoop do
       end
     end
 
-    it 'responds to a request' do
-      expect(Net::HTTP.get_response(URI.parse(endpoint)).body.strip).to eq(body)
+    context 'when the request is a path' do
+      let(:response) { Low::ResponseFactory.html(body: 'Hello') }
+
+      it 'responds with a buffered body' do
+        expect(Net::HTTP.get_response(URI.parse(endpoint)).body.strip).to eq('Hello')
+      end
+    end
+
+    context 'when the request is a filepath' do
+      # TODO: Currently stubbing response through router but should stub file server and its response as this.
+      let(:response) { Low::ResponseFactory.file(path: './public/cave.jpg', content_type: 'jpg') }
+
+      it 'responds with a file body' do
+        http_response = Net::HTTP.get_response(URI.parse(endpoint))
+
+        expect(http_response.code).to eq('200')
+        expect(http_response.content_type).to eq('jpg')
+        expect(http_response.body).to eq(File.binread('./public/cave.jpg'))
+      end
     end
 
     context 'with blocking IO' do

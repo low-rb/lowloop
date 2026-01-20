@@ -29,6 +29,7 @@ Gem::Specification.new do |spec|
   spec.add_dependency 'async-http'
   spec.add_dependency 'io-stream'
   spec.add_dependency 'protocol-http'
+  spec.add_dependency 'protocol-url'
 
   spec.add_dependency 'low_event'
   spec.add_dependency 'low_type', '~> 1.0'
