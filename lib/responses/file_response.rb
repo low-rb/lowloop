@@ -9,8 +9,8 @@ module Low
         file = event.file
 
         if File.exist?(file.path)
-          response = ResponseFactory.file(path: file.path, content_type: file.content_type)
-          return Low::Events::ResponseEvent.new(response:)
+          response = Factories::ResponseFactory.file(path: file.path, content_type: file.content_type)
+          return Events::ResponseEvent.new(response:)
         end
 
         nil

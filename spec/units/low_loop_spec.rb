@@ -29,7 +29,7 @@ RSpec.describe LowLoop do
 
   let(:request_event) { Low::Events::RequestEvent.new(request:) }
   let(:request) { Low::Support::RequestFactory.request(path: '/') }
-  let(:response) { Low::ResponseFactory.html(body: 'Hi') }
+  let(:response) { Low::Factories::ResponseFactory.html(body: 'Hi') }
 
   let(:endpoint) { "http://#{host}:#{port}" }
   let(:host) { '127.0.0.1' }
@@ -79,7 +79,7 @@ RSpec.describe LowLoop do
     end
 
     context 'when the request is a path' do
-      let(:response) { Low::ResponseFactory.html(body: 'Hello') }
+      let(:response) { Low::Factories::ResponseFactory.html(body: 'Hello') }
 
       it 'responds with a buffered body' do
         expect(Net::HTTP.get_response(URI.parse(endpoint)).body.strip).to eq('Hello')
@@ -88,7 +88,7 @@ RSpec.describe LowLoop do
 
     context 'when the request is a filepath' do
       # TODO: Currently stubbing response through router but should stub file server and its response as this.
-      let(:response) { Low::ResponseFactory.file(path: './public/cave.jpg', content_type: 'jpg') }
+      let(:response) { Low::Factories::ResponseFactory.file(path: './public/cave.jpg', content_type: 'jpg') }
 
       it 'responds with a file body' do
         http_response = Net::HTTP.get_response(URI.parse(endpoint))

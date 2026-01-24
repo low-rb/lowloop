@@ -61,7 +61,7 @@ module Low
     # Fallback mode for when there's no dependencies and you want to know that the server is still working.
     def mirror(event:)
       request = event.request
-      response = ResponseFactory.html(body: "Thank you for visiting #{request.path} with body: '#{request.body}'")
+      response = Factories::ResponseFactory.html(body: "Thank you for visiting #{request.path} with body: '#{request.body}'")
       Events::ResponseEvent.new(response:)
     end
 
