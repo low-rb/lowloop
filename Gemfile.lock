@@ -9,7 +9,8 @@ PATH
 PATH
   remote: ../low_type
   specs:
-    low_type (1.1.6)
+    low_type (1.1.7)
+      expressions (~> 0.1)
 
 PATH
   remote: ../observers
