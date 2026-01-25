@@ -4,7 +4,7 @@ require_relative 'lib/version'
 
 Gem::Specification.new do |spec|
   spec.name = 'low_loop'
-  spec.version = Low::LOOP_VERSION
+  spec.version = Low::Loop::VERSION
   spec.authors = ['maedi']
   spec.email = ['maediprichard@gmail.com']
 
