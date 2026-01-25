@@ -15,7 +15,7 @@ module Low
       @web_root = web_root
       @content_types = content_types.transform_keys(&:to_s)
 
-      observers(File) << FileResponse
+      observers(Events::FileEvent) << FileResponse
     end
 
     def extension(filepath:)
@@ -34,9 +34,9 @@ module Low
       extension = extension(filepath:)
       return nil if extension.nil?
 
-      file = FileState.new(path: safe_path(filepath), content_type: @content_types[extension])
+      file = States::FileState.new(path: safe_path(filepath), content_type: @content_types[extension])
 
-      trigger File, event: Events::FileEvent.new(file:, request: event.request)
+      Events::FileEvent.trigger(file:, request: event.request)
     end
 
     private

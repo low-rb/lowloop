@@ -52,34 +52,30 @@ RSpec.describe Low::FileServer do
 
     context 'when the path has query params' do
       let(:request) { Low::Support::RequestFactory.request(path: '/cave.jpg?dimensions=200x200&treasure=ruby') }
-
-      let(:file_event) { Low::Events::FileEvent.new(file:, request:) }
       # TODO: Test doesn't appear to care if ":jpg" is any other value; should fail. Value object related?
-      let(:file) { Low::FileState.new(path: './public/cave.jpg', content_type: content_types[:jpg]) }
+      let(:file) { Low::States::FileState.new(path: './public/cave.jpg', content_type: content_types[:jpg]) }
 
       before do
-        allow(file_server).to receive(:trigger)
+        allow(Low::Events::FileEvent).to receive(:trigger)
       end
 
       it 'strips the query params' do
         file_server.handle(event: request_event)
-        expect(file_server).to have_received(:trigger).with(File, event: file_event)
+        expect(Low::Events::FileEvent).to have_received(:trigger).with(file:, request:)
       end
     end
 
     context 'when the path does directory traversal' do
       let(:request) { Low::Support::RequestFactory.request(path: '../../etc/passwd.txt') }
-
-      let(:file_event) { Low::Events::FileEvent.new(file:, request:) }
-      let(:file) { Low::FileState.new(path: './public/etc/passwd.txt', content_type: content_types[:txt]) }
+      let(:file) { Low::States::FileState.new(path: './public/etc/passwd.txt', content_type: content_types[:txt]) }
 
       before do
-        allow(file_server).to receive(:trigger)
+        allow(Low::Events::FileEvent).to receive(:trigger)
       end
 
       it 'strips the directory traversal segments' do
         file_server.handle(event: request_event)
-        expect(file_server).to have_received(:trigger).with(File, event: file_event)
+        expect(Low::Events::FileEvent).to have_received(:trigger).with(file:, request:)
       end
     end
   end
