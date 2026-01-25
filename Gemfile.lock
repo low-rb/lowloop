@@ -9,7 +9,7 @@ PATH
 PATH
   remote: ../low_type
   specs:
-    low_type (1.1.7)
+    low_type (1.1.8)
       expressions (~> 0.1)
 
 PATH
