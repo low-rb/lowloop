@@ -54,7 +54,8 @@ RSpec.describe Low::FileServer do
       let(:request) { Low::Support::RequestFactory.request(path: '/cave.jpg?dimensions=200x200&treasure=ruby') }
 
       let(:file_event) { Low::Events::FileEvent.new(file:, request:) }
-      let(:file) { Low::FileState.new(path: './public/cave.jpg', content_type: content_types[:txt]) }
+      # TODO: Test doesn't appear to care if ":jpg" is any other value; should fail. Value object related?
+      let(:file) { Low::FileState.new(path: './public/cave.jpg', content_type: content_types[:jpg]) }
 
       before do
         allow(file_server).to receive(:trigger)
