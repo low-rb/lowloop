@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-source 'https://rubygems.org'
+source 'https://gem.coop'
 
 # Specify your gem's dependencies in low_loop.gemspec
 gemspec
@@ -11,6 +11,7 @@ group :development do
   gem 'observers', path: '../observers'
 
   gem 'benchmark'
+  gem 'ostruct'
   gem 'pry'
   gem 'pry-nav'
   gem 'rack'

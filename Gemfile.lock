@@ -21,7 +21,7 @@ PATH
 PATH
   remote: .
   specs:
-    low_loop (0.3.1)
+    low_loop (0.3.2)
       async
       async-http
       io-stream
@@ -31,7 +31,7 @@ PATH
       protocol-url
 
 GEM
-  remote: https://rubygems.org/
+  remote: https://gem.coop/
   specs:
     ast (2.4.3)
     async (2.36.0)
@@ -75,6 +75,7 @@ GEM
       expressions (~> 0.1)
     method_source (1.1.0)
     metrics (0.15.0)
+    ostruct (0.6.1)
     parallel (1.27.0)
     parser (3.3.10.1)
       ast (~> 2.4.1)
@@ -143,6 +144,7 @@ DEPENDENCIES
   low_loop!
   low_type!
   observers!
+  ostruct
   pry
   pry-nav
   rack
