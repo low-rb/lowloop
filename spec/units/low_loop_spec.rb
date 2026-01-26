@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 require 'benchmark'
-
 require 'net/http'
 require 'uri'
 require 'async'
@@ -11,32 +10,30 @@ require 'socket'
 
 require 'low_event'
 require_relative '../../lib/factories/response_factory'
+require_relative '../../lib/support/config_loader'
 require_relative '../../lib/low_loop'
 require_relative '../factories/request_factory'
 require_relative '../fixtures/router'
 
 RSpec.describe LowLoop do
-  subject(:low_loop) { described_class.new(config:) }
+  # In async mode we reinstantiate low loop in its own thread, but use the same config and router observers.
+  subject!(:low_loop) { described_class.new(config:, router:) }
 
   let(:config) do
-    config = Struct.new(:host, :port, :matrix_mode, :mirror_mode)
-    config.new('127.0.0.1', 4133, false, false)
+    Low::ConfigLoader.load('./spec/fixtures/config.yaml')
   end
   let(:router) do
-    # In practice LowLoop observes the router, but because "before(:all)" can't stub ":router" then we inverse the observe.
-    Router.new.tap { |router| router.observe(low_loop) }
+    Router.new
   end
 
   let(:request_event) { Low::Events::RequestEvent.new(request:) }
   let(:request) { Low::Support::RequestFactory.request(path: '/') }
   let(:response) { Low::Factories::ResponseFactory.html(body: 'Hi') }
 
-  let(:endpoint) { "http://#{host}:#{port}" }
-  let(:host) { '127.0.0.1' }
-  let(:port) { 4133 }
+  let(:endpoint) { "http://#{config.host}:#{config.port}" }
   let(:client) { Async::HTTP::Internet.new }
   # Or could be more direct:
-  # endpoint = Async::HTTP::Endpoint["http://#{host}:#{port}"]
+  # endpoint = Async::HTTP::Endpoint["http://#{config.host}:#{config.port}"]
   # client = Async::HTTP::Client.new(endpoint)
 
   def response_event(response:, delay_duration: 0)
@@ -59,13 +56,11 @@ RSpec.describe LowLoop do
 
   context 'when in async mode (asynchronous)' do
     before(:all) do
-      config = Struct.new(:host, :port, :matrix_mode, :mirror_mode)
-
       # When thread wont die run:
       # lsof -i :4133
       # kill -9 <pid>
       @server = Thread.new do
-        described_class.new(config: config.new('127.0.0.1', 4133, false, false)).start
+        described_class.new(config: Low::ConfigLoader.load('./spec/fixtures/config.yaml')).start
       end
 
       sleep 0.1
@@ -87,7 +82,6 @@ RSpec.describe LowLoop do
     end
 
     context 'when the request is a filepath' do
-      # TODO: Currently stubbing response through router but should stub file server and its response as this.
       let(:response) { Low::Factories::ResponseFactory.file(path: './public/cave.jpg', content_type: 'jpg') }
 
       it 'responds with a file body' do

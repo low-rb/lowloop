@@ -1,8 +1,6 @@
 #!/usr/bin/env ruby
 # frozen_string_literal: true
 
-require 'yaml'
-
 require_relative '../lib/low_loop'
 require_relative '../lib/servers/file_server'
 require_relative '../lib/support/config_loader'

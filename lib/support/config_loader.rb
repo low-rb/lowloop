@@ -1,11 +1,12 @@
 # frozen_string_literal: true
 
 require 'ostruct'
+require 'yaml'
 
 module Low
   class ConfigLoader
     class << self
-      def load(filepath, env)
+      def load(filepath, env = {})
         config_file = YAML.safe_load_file(filepath, symbolize_names: true)
 
         # Environment variables override config file.
