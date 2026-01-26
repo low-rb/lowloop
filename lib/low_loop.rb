@@ -9,18 +9,18 @@ require 'observers'
 require_relative 'factories/response_factory'
 require_relative 'requests/request_parser'
 require_relative 'responses/response_builder'
+require_relative 'servers/file_server'
 
 class LowLoop
   include Observers
 
   attr_reader :config
 
-  def initialize(config:, dependencies: [])
+  def initialize(config:, router: nil)
     @config = config
 
-    dependencies.each do |dependency|
-      observers << dependency
-    end
+    observers << Low::FileServer.new(web_root: config.web_root, content_types: config.content_types)
+    observers << router if router
 
     observers.push(self, action: :mirror) if config.mirror_mode
   end

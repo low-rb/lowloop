@@ -2,29 +2,20 @@
 # frozen_string_literal: true
 
 require 'yaml'
-require 'ostruct'
 
 require_relative '../lib/low_loop'
 require_relative '../lib/servers/file_server'
+require_relative '../lib/support/config_loader'
 require_relative '../lib/support/config_support'
 
-# Override config with your own environment variables.
-config_env = {
+env = {
   host: ENV.fetch('LOW_HOST', nil),
   port: ENV.fetch('LOW_PORT', nil),
   web_root: ENV.fetch('LOW_WEB_ROOT', nil),
-  matrix_mode: ConfigSupport.parse_boolean(ENV.fetch('LOW_MATRIX', nil)),
-  mirror_mode: ConfigSupport.parse_boolean(ENV.fetch('LOW_MIRROR', nil))
+  matrix_mode: Low::ConfigSupport.parse_boolean(ENV.fetch('LOW_MATRIX', nil)),
+  mirror_mode: Low::ConfigSupport.parse_boolean(ENV.fetch('LOW_MIRROR', nil))
 }
 
-# Override config with your own yaml file.
-config_yaml = YAML.safe_load_file('./config/config.yaml', symbolize_names: true)
+config = Low::ConfigLoader.load('./config/config.yaml', env)
 
-config_data = config_yaml.merge(config_env) do |_key, old_value, new_value|
-  new_value.nil? ? old_value : new_value
-end
-
-config = OpenStruct.new(config_data)
-dependencies = [Low::FileServer.new(web_root: config.web_root, content_types: config.content_types)]
-
-LowLoop.new(config:, dependencies:).start
+LowLoop.new(config:).start
