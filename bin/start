@@ -4,14 +4,13 @@
 require_relative '../lib/low_loop'
 require_relative '../lib/servers/file_server'
 require_relative '../lib/support/config_loader'
-require_relative '../lib/support/config_support'
 
 env = {
   host: ENV.fetch('LOW_HOST', nil),
   port: ENV.fetch('LOW_PORT', nil),
   web_root: ENV.fetch('LOW_WEB_ROOT', nil),
-  matrix_mode: Low::ConfigSupport.parse_boolean(ENV.fetch('LOW_MATRIX', nil)),
-  mirror_mode: Low::ConfigSupport.parse_boolean(ENV.fetch('LOW_MIRROR', nil))
+  matrix_mode: Low::ConfigLoader.parse_boolean(ENV.fetch('LOW_MATRIX', nil)),
+  mirror_mode: Low::ConfigLoader.parse_boolean(ENV.fetch('LOW_MIRROR', nil))
 }
 
 config = Low::ConfigLoader.load('./config/config.yaml', env)

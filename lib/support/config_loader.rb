@@ -16,6 +16,13 @@ module Low
 
         OpenStruct.new(config_data)
       end
+
+      def parse_boolean(value)
+        return true if value == '1'
+        return false if value == '0'
+
+        nil
+      end
     end
   end
 end
