@@ -3,7 +3,7 @@
 require 'observers'
 require_relative '../../lib/low_loop'
 
-class Router
+class MockRouter
   include Observers
 
   def handle(event:)

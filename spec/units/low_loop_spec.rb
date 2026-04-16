@@ -13,7 +13,7 @@ require_relative '../../lib/factories/response_factory'
 require_relative '../../lib/support/config_loader'
 require_relative '../../lib/low_loop'
 require_relative '../factories/request_factory'
-require_relative '../fixtures/router'
+require_relative '../fixtures/mock_router'
 
 RSpec.describe LowLoop do
   # In async mode we reinstantiate low loop in its own thread, but use the same config and router observers.
@@ -23,7 +23,7 @@ RSpec.describe LowLoop do
     Low::ConfigLoader.load('./spec/fixtures/config.yaml')
   end
   let(:router) do
-    Router.new
+    MockRouter.new
   end
 
   let(:request_event) { Low::Events::RequestEvent.new(request:) }
@@ -56,7 +56,7 @@ RSpec.describe LowLoop do
 
   context 'when in async mode (asynchronous)' do
     before(:all) do
-      # When thread wont die run:
+      # When thread wont die, run:
       # lsof -i :4133
       # kill -9 <pid>
       @server = Thread.new do
