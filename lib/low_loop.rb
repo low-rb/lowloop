@@ -19,10 +19,10 @@ class LowLoop
   def initialize(config:, router: nil)
     @config = config
 
-    observers << Low::FileServer.new(web_root: config.web_root, content_types: config.content_types)
-    observers << router if router
+    observers(Low::Events::RequestEvent) << Low::FileServer.new(web_root: config.web_root, content_types: config.content_types)
+    observers(Low::Events::RequestEvent) << router if router
 
-    observers.push(self, action: :mirror) if config.mirror_mode
+    observers.push(Low::Events::RequestEvent, action: :mirror) if config.mirror_mode
   end
 
   def start
