@@ -2,6 +2,7 @@ PATH
   remote: ../low_event
   specs:
     low_event (0.3.1)
+      low_dependency
       low_type (~> 1.0)
       observers
       protocol-http
