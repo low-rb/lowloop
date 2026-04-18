@@ -26,7 +26,6 @@ RSpec.describe LowLoop do
     MockRouter.new
   end
 
-  let(:request_event) { Low::Events::RequestEvent.new(request:) }
   let(:request) { Low::Support::RequestFactory.request(path: '/') }
   let(:response) { Low::Factories::ResponseFactory.html(body: 'Hi') }
 
@@ -45,9 +44,9 @@ RSpec.describe LowLoop do
     allow(router).to receive(:handle).and_return(response_event(response:))
   end
 
-  context 'without event loop' do
-    it 'responds to a request' do
-      expect(low_loop.take(event: request_event)).to be_instance_of(Low::Events::ResponseEvent)
+  context 'without a server' do
+    it 'sends request to router' do
+      expect(Low::Events::RequestEvent.take(request:)).to be_instance_of(Low::Events::ResponseEvent)
     end
   end
 

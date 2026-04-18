@@ -9,7 +9,7 @@ module Low
 
       # TODO: For RouteEvent/FileEvent parse and provide query params as attributes on the event.
       def initialize(file:, request: nil)
-        super()
+        super(key: self.class)
 
         @file = file
         @request = request

@@ -36,7 +36,7 @@ class LowLoop
 
         Fiber.schedule do
           request = Low::RequestParser.parse(socket:, host: config.host, port: config.port)
-          response_event = take(event: Low::Events::RequestEvent.new(request:))
+          response_event = Low::Events::RequestEvent.take(request:)
           response = response_event.response
 
           Low::ResponseBuilder.respond(config:, socket:, response:)
