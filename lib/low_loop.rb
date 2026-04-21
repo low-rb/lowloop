@@ -16,7 +16,7 @@ class LowLoop
 
   attr_reader :config
 
-  def initialize(config:, router: nil)
+  def initialize(config:, router: nil, renderer: nil)
     @config = config
 
     observers(Low::Events::RequestEvent) << Low::FileServer.new(web_root: config.web_root, content_types: config.content_types)
