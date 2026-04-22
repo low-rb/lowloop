@@ -18,6 +18,7 @@ class LowLoop
 
   def initialize(config:, router: nil, renderer: nil)
     @config = config
+    @frames = LowFrame.new(renderer:, fps: 30)
 
     observers(Low::Events::RequestEvent) << Low::FileServer.new(web_root: config.web_root, content_types: config.content_types)
     observers(Low::Events::RequestEvent) << router if router
@@ -33,6 +34,8 @@ class LowLoop
     Fiber.schedule do
       loop do
         socket = server.accept
+
+        @frames.render(renderer:)
 
         Fiber.schedule do
           request = Low::RequestParser.parse(socket:, host: config.host, port: config.port)
