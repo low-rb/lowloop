@@ -11,7 +11,7 @@ module Low
           headers = Protocol::HTTP::Headers.new(['content-type', 'text/html'])
           body = Protocol::HTTP::Body::Buffered.wrap(body)
 
-          Protocol::HTTP::Response.new('http/1.1', 200, headers, body)
+          Protocol::HTTP::Response.new('HTTP/1.1', 200, headers, body)
         end
 
         def file(path:, content_type:)
@@ -19,7 +19,7 @@ module Low
           file = File.open(path, 'rb')
           body = Protocol::HTTP::Body::File.new(file)
 
-          Protocol::HTTP::Response.new('http/1.1', 200, headers, body)
+          Protocol::HTTP::Response.new('HTTP/1.1', 200, headers, body)
         end
       end
     end

@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require 'async'
+require 'io/wait'
 require 'socket'
 require 'low_type'
 require 'low_event'
@@ -13,6 +14,9 @@ require_relative 'servers/file_server'
 
 class LowLoop
   include Observers
+
+  DEFAULT_KEEP_ALIVE_TIMEOUT = 30
+  DEFAULT_REQUEST_TIMEOUT = 10
 
   attr_reader :config
 
@@ -35,11 +39,7 @@ class LowLoop
         socket = server.accept
 
         Fiber.schedule do
-          request = Low::RequestParser.parse(socket:, host: config.host, port: config.port)
-          response_event = Low::Events::RequestEvent.take(request:)
-          response = response_event.response
-
-          Low::ResponseBuilder.respond(config:, socket:, response:)
+          handle_connection(socket)
         rescue StandardError => e
           puts e.message
         ensure
@@ -68,4 +68,54 @@ class LowLoop
   def ==(other) = other.class == self.class
   def eql?(other) = self == other
   def hash = [self.class].hash
+
+  private
+
+  def handle_connection(socket)
+    stream = Low::RequestParser.create_stream(socket)
+    keep_alive = true
+    version = nil
+
+    while keep_alive
+      break unless socket.wait_readable(keep_alive_timeout)
+
+      socket.timeout = request_timeout
+      begin
+        request = Low::RequestParser.parse(stream:, host: config.host, port: config.port, version:)
+      rescue IO::TimeoutError
+        break
+      ensure
+        socket.timeout = nil
+      end
+      break if request.nil?
+
+      version ||= request.version
+      keep_alive = keep_alive?(request)
+
+      response_event = Low::Events::RequestEvent.take(request:)
+      response = response_event.response
+
+      Low::ResponseBuilder.respond(config:, socket:, response:, keep_alive:)
+    end
+  end
+
+  def keep_alive?(request)
+    tokens = (request.headers['connection'] || []).flat_map do |value|
+      value.split(',').map { |token| token.strip.downcase }
+    end
+
+    if request.version.to_s.downcase.include?('1.0')
+      tokens.include?('keep-alive')
+    else
+      !tokens.include?('close')
+    end
+  end
+
+  def keep_alive_timeout
+    config.keep_alive_timeout || DEFAULT_KEEP_ALIVE_TIMEOUT
+  end
+
+  def request_timeout
+    config.request_timeout || DEFAULT_REQUEST_TIMEOUT
+  end
 end

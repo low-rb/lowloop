@@ -8,7 +8,7 @@ PATH
       protocol-http
 
 PATH
-  remote: ../lowtype
+  remote: ../low_type
   specs:
     low_type (1.1.13)
       expressions (~> 0.1)
