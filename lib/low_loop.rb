@@ -10,6 +10,7 @@ require_relative 'factories/response_factory'
 require_relative 'requests/request_parser'
 require_relative 'responses/response_builder'
 require_relative 'servers/file_server'
+require_relative 'support/low_frame'
 
 class LowLoop
   include Observers
@@ -18,7 +19,7 @@ class LowLoop
 
   def initialize(config:, router: nil, renderer: nil)
     @config = config
-    @frames = LowFrame.new(renderer:, fps: 30)
+    @frame = LowFrame.new(renderer:, fps: 30)
 
     observers(Low::Events::RequestEvent) << Low::FileServer.new(web_root: config.web_root, content_types: config.content_types)
     observers(Low::Events::RequestEvent) << router if router
@@ -35,7 +36,7 @@ class LowLoop
       loop do
         socket = server.accept
 
-        @frames.render(renderer:)
+        @frame.render(renderer:) if @frame.renderer
 
         Fiber.schedule do
           request = Low::RequestParser.parse(socket:, host: config.host, port: config.port)

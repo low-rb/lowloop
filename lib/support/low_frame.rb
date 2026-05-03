@@ -3,7 +3,7 @@
 require 'io/console'
 
 class LowFrame
-  attr_reader :screen_size
+  attr_reader :screen_size, :renderer
 
   def initialize(renderer:, fps: 30, debug: false)
     @renderer = renderer
@@ -12,12 +12,12 @@ class LowFrame
     # Millisecond duration of each frame. We lose a small amount of precision dropping the decimal.
     @frame_time = ((1.0 / fps) * 1000).to_i
 
-    rows, columns = IO.console.winsize
-    @screen_size = { rows:, columns: }
+    row_count, column_count = IO.console.winsize
+    @screen_size = { row_count:, column_count: }
 
     @last_frame = nil
 
-    setup
+    setup unless debug?
   end
 
   def render
@@ -25,13 +25,13 @@ class LowFrame
       system 'clear' unless debug?
 
       @last_frame = current_timestamp
-      @renderer.render
+      @renderer.render(screen_size: @screen_size)
     end
   end
 
   def setup
     print "\e[?25l" # Hide cursor.
-    system 'clear' unless debug?
+    system 'clear'
   end
 
   def reset
