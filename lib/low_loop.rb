@@ -36,7 +36,7 @@ class LowLoop
       loop do
         socket = server.accept
 
-        @frame.render(renderer:) if @frame.renderer
+        @frame.render if @frame.renderer
 
         Fiber.schedule do
           request = Low::RequestParser.parse(socket:, host: config.host, port: config.port)
