@@ -17,9 +17,9 @@ class LowLoop
 
   attr_reader :config
 
-  def initialize(config:, router: nil, renderer: nil)
+  def initialize(config:, router: nil, renderer: nil, show_output: true)
     @config = config
-    @frame = LowFrame.new(renderer:, fps: 30)
+    @frame = LowFrame.new(renderer:, fps: 30, show_output:)
 
     observers(Low::Events::RequestEvent) << Low::FileServer.new(web_root: config.web_root, content_types: config.content_types)
     observers(Low::Events::RequestEvent) << router if router

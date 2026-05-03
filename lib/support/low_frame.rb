@@ -5,9 +5,9 @@ require 'io/console'
 class LowFrame
   attr_reader :screen_size, :renderer
 
-  def initialize(renderer:, fps: 30, debug: false)
+  def initialize(renderer:, fps: 30, show_output: true)
     @renderer = renderer
-    @debug = debug
+    @show_output = show_output
 
     # Millisecond duration of each frame. We lose a small amount of precision dropping the decimal.
     @frame_time = ((1.0 / fps) * 1000).to_i
@@ -17,12 +17,12 @@ class LowFrame
 
     @last_frame = nil
 
-    setup unless debug?
+    setup if renderer && show_output
   end
 
   def render
     if @last_frame.nil? || (current_timestamp - @last_frame) >= @frame_time
-      system 'clear' unless debug?
+      system 'clear' if @show_output
 
       @last_frame = current_timestamp
       @renderer.render(screen_size: @screen_size)
@@ -50,9 +50,5 @@ class LowFrame
 
   def current_timestamp
     Process.clock_gettime(Process::CLOCK_MONOTONIC, :millisecond)
-  end
-
-  def debug?
-    @debug
   end
 end
