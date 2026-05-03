@@ -1,0 +1,54 @@
+# frozen_string_literal: true
+
+require 'io/console'
+
+class LowFrame
+  attr_reader :screen_size, :renderer
+
+  def initialize(renderer:, fps: 30, show_output: true)
+    @renderer = renderer
+    @show_output = show_output
+
+    # Millisecond duration of each frame. We lose a small amount of precision dropping the decimal.
+    @frame_time = ((1.0 / fps) * 1000).to_i
+
+    row_count, column_count = IO.console.winsize
+    @screen_size = { row_count:, column_count: }
+
+    @last_frame = nil
+
+    setup if renderer && show_output
+  end
+
+  def render
+    if @last_frame.nil? || (current_timestamp - @last_frame) >= @frame_time
+      system 'clear' if @show_output
+
+      @last_frame = current_timestamp
+      @renderer.render(screen_size: @screen_size)
+    end
+  end
+
+  def setup
+    print "\e[?25l" # Hide cursor.
+    system 'clear'
+  end
+
+  def reset
+    print "\e[?25h\e[0m" # Show cursor and reset colors.
+  end
+
+  def exit
+    trap('INT') {
+      reset
+      system 'clear'
+      exit
+    }
+  end
+
+  private
+
+  def current_timestamp
+    Process.clock_gettime(Process::CLOCK_MONOTONIC, :millisecond)
+  end
+end
