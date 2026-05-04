@@ -1,7 +1,7 @@
 PATH
   remote: ../low_event
   specs:
-    low_event (0.3.1)
+    low_event (0.4.0)
       low_dependency
       low_type (~> 1.0)
       observers
@@ -17,7 +17,7 @@ PATH
 PATH
   remote: ../observers
   specs:
-    observers (0.5.3)
+    observers (0.6.0)
       low_dependency
 
 PATH

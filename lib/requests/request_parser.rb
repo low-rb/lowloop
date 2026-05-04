@@ -9,11 +9,11 @@ module Low
     include LowType
 
     class << self
-      def create_stream(socket)
+      def create_stream(socket: TCPSocket) -> { IO::Stream::Buffered }
         IO::Stream(socket)
       end
 
-      def parse(stream:, host:, port:, version: nil)
+      def parse(stream: IO::Stream::Buffered, host: String, port: Integer, version: nil) -> { ::Protocol::HTTP::Request | nil }
         version ||= Async::HTTP::Protocol::HTTP.default.protocol_for(stream)::VERSION
 
         result = parse_request(stream:)
@@ -36,11 +36,8 @@ module Low
       # :header_3\r\n
       # \r\n
       # :body
-      #
-      # TODO: Handle type for namespaced "IO:Stream".
-      def parse_request(stream:)
-        request_line = stream.gets
-        return nil if request_line.nil?
+      def parse_request(stream: IO::Stream::Buffered)
+        request_line = stream.gets || return
 
         request_line = request_line.strip
         return nil if request_line.empty?
@@ -51,10 +48,10 @@ module Low
         [method, full_path, path, query]
       end
 
-      # TODO: Handle namespaced stream type "IO:Stream".
-      def parse_headers(stream:) -> { ::Protocol::HTTP::Headers }
+      def parse_headers(stream: IO::Stream::Buffered) -> { ::Protocol::HTTP::Headers }
         fields = []
 
+        # Sometimes returns nil which represents a client disconnect mid-request.
         while (line = stream.gets)
           line = line.strip
           break if line.empty?
@@ -66,7 +63,7 @@ module Low
         ::Protocol::HTTP::Headers.new(fields)
       end
 
-      def parse_body(stream:, method:, headers:)
+      def parse_body(stream: IO::Stream::Buffered, method: String, headers: ::Protocol::HTTP::Headers)
         return nil unless %w[POST PUT PATCH].include?(method)
 
         content_length = headers['content-length']&.first&.to_i

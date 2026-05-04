@@ -72,7 +72,7 @@ class LowLoop
   private
 
   def handle_connection(socket)
-    stream = Low::RequestParser.create_stream(socket)
+    stream = Low::RequestParser.create_stream(socket:)
     keep_alive = true
     version = nil
 
