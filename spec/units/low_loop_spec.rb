@@ -16,7 +16,7 @@ require_relative '../factories/request_factory'
 require_relative '../fixtures/mock_router'
 
 RSpec.describe LowLoop do
-  # In async mode we reinstantiate low loop in its own thread, but use the same config and router observers.
+  # In async mode we reinstantiate low loop in its own thread, but use the same config and observers.
   subject!(:low_loop) { described_class.new(config:, router:) }
 
   let(:config) do
