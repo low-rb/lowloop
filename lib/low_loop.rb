@@ -36,12 +36,18 @@ class LowLoop
 
     Fiber.set_scheduler(Async::Scheduler.new)
 
-    Fiber.schedule do
+    Async do |task|
+      # Background task.
+      task.async do
+        loop do
+          @frame.render if @frame.renderer
+        end
+      end
+
+      # Request handler.
       loop do
         socket = server.accept
-
-        @frame.render if @frame.renderer
-
+        
         Fiber.schedule do
           handle_connection(socket)
         rescue StandardError => e
@@ -59,6 +65,14 @@ class LowLoop
     server = TCPServer.new(config.host, config.port)
     server.listen(10)
     server
+  end
+
+  def render
+    Async do
+      loop do
+        @frame.render
+      end
+    end
   end
 
   # Fallback mode for when there's no dependencies and you want to know that the server is still working.
