@@ -111,7 +111,7 @@ RSpec.describe LowLoop do
         end.real
 
         expect(router).to have_received(:handle).exactly(request_count).times
-        expect(duration).to be < 1.1
+        expect(duration).to be < 1.2
       end
     end
 

@@ -8,7 +8,7 @@ PATH
       providers
 
 PATH
-  remote: ../lowtype
+  remote: ../low_type
   specs:
     low_type (1.3.0)
       expressions (~> 0.1)

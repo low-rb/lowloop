@@ -3,6 +3,8 @@ port: 3000
 web_root: './public'
 matrix_mode: true
 mirror_mode: true
+keep_alive_timeout: 30
+request_timeout: 10
 content_types:
   html: text/html
   txt: text/plain
