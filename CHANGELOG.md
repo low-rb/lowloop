@@ -5,6 +5,18 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 Minor features that don't break backwards compatibility are released as patches.
 
+## 0.5.0
+
+### Added
+
+- Add background task loop
+
+### Changes
+
+- Render frames at 10fps
+- Provide current screen size on each render
+- Leave screen clearing up to renderer
+
 ## 0.4.0
 
 ### Added
