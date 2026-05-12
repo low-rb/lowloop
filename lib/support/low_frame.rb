@@ -22,7 +22,6 @@ class LowFrame
 
   def render
     if @last_frame.nil? || (current_timestamp - @last_frame) >= @frame_time
-      system 'clear' if @show_output
 
       @last_frame = current_timestamp
       @renderer.render(screen_size: @screen_size)
