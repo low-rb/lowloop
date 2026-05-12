@@ -3,7 +3,7 @@
 require_relative '../../../lib/support/low_frame'
 
 RSpec.describe LowFrame do
-  subject(:low_frame) { described_class.new(renderer:, fps:, debug: true) }
+  subject(:low_frame) { described_class.new(renderer:, fps:, show_output: true) }
 
   let(:renderer) { double(Object, render: nil) }
 

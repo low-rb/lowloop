@@ -17,13 +17,13 @@ class LowFrame
   end
 
   def render
-    if @last_frame.nil? || (current_timestamp - @last_frame) >= @frame_time
-      row_count, column_count = IO.console.winsize
-      @screen_size = { row_count:, column_count: }
+    return unless @last_frame.nil? || (current_timestamp - @last_frame) >= @frame_time
 
-      @last_frame = current_timestamp
-      @renderer.render(screen_size: @screen_size)
-    end
+    row_count, column_count = IO.console.winsize
+    @screen_size = { row_count:, column_count: }
+
+    @last_frame = current_timestamp
+    @renderer.render(screen_size: @screen_size)
   end
 
   def setup
@@ -36,11 +36,11 @@ class LowFrame
   end
 
   def exit
-    trap('INT') {
+    trap('INT') do
       reset
       system 'clear'
       exit
-    }
+    end
   end
 
   private

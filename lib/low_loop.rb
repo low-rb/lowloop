@@ -46,7 +46,7 @@ class LowLoop
       # Request handler.
       loop do
         socket = server.accept
-        
+
         task.async do
           handle_connection(socket)
         rescue StandardError => e
