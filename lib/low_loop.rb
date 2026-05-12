@@ -34,8 +34,6 @@ class LowLoop
   def start
     server = start_server
 
-    Fiber.set_scheduler(Async::Scheduler.new)
-
     Async do |task|
       # Background task.
       task.async do
@@ -48,7 +46,7 @@ class LowLoop
       loop do
         socket = server.accept
         
-        Fiber.schedule do
+        task.async do
           handle_connection(socket)
         rescue StandardError => e
           puts e.message
