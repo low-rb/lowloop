@@ -5,7 +5,7 @@ require 'io/console'
 class LowFrame
   attr_reader :screen_size, :renderer
 
-  def initialize(renderer:, fps: 30, show_output: true)
+  def initialize(renderer:, fps: 10, show_output: true)
     @renderer = renderer
     @show_output = show_output
 
