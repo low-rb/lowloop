@@ -25,9 +25,6 @@ class LowFrame
   def render
     return unless @last_frame.nil? || (current_timestamp - @last_frame) >= @frame_time
 
-    row_count, column_count = IO.console.winsize
-    @screen_size = { row_count:, column_count: }
-
     @last_frame = current_timestamp
     @renderer.render(screen_size: @screen_size)
   end
@@ -35,10 +32,17 @@ class LowFrame
   def setup
     print "\e[?25l" # Hide cursor.
     system 'clear'
+
+    resize
+
+    Signal.trap("WINCH") do
+      resize
+    end
   end
 
-
-    end
+  def resize
+    row_count, column_count = IO.console.winsize
+    @screen_size = { row_count:, column_count: }
   end
 
   private
