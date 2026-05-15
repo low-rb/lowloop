@@ -25,10 +25,11 @@ class LowLoop
     @config = config
     @frame = LowFrame.new(renderer:, fps: 10, show_output:)
 
-    observers(Low::Events::RequestEvent) << Low::FileServer.new(web_root: config.web_root, content_types: config.content_types)
-    observers(Low::Events::RequestEvent) << router if router
-
-    observers.push(Low::Events::RequestEvent, action: :mirror) if config.mirror_mode
+    Low::Events::RequestEvent.define do |observers|
+      observers << Low::FileServer.new(web_root: config.web_root, content_types: config.content_types)
+      observers << router if router
+      observers.push(action: :mirror) if config.mirror_mode
+    end
   end
 
   def start
