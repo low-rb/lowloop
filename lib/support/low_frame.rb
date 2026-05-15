@@ -2,12 +2,6 @@
 
 require 'io/console'
 
-Signal.trap('INT') do
-  print "\e[?25h\e[0m" # Show cursor and reset colors.
-  system 'clear'
-  exit
-end
-
 class LowFrame
   attr_reader :screen_size, :renderer
 
@@ -35,8 +29,14 @@ class LowFrame
 
     resize
 
-    Signal.trap("WINCH") do
+    Signal.trap('WINCH') do
       resize
+    end
+
+    Signal.trap('INT') do
+      print "\e[?25h\e[0m" # Show cursor and reset colors.
+      system 'clear'
+      exit
     end
   end
 

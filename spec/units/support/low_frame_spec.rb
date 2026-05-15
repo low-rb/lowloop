@@ -8,10 +8,6 @@ RSpec.describe LowFrame do
   let(:renderer) { double(Object, render: nil) }
 
   describe '#render' do
-    after do
-      low_frame.reset
-    end
-
     context 'when 2 FPS' do
       let(:fps) { 2 }
 
