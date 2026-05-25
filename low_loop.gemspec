@@ -28,6 +28,7 @@ Gem::Specification.new do |spec|
   spec.add_dependency 'async'
   spec.add_dependency 'async-http'
   spec.add_dependency 'io-stream'
+  spec.add_dependency 'paint'
   spec.add_dependency 'protocol-http'
   spec.add_dependency 'protocol-url'
 

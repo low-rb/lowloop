@@ -9,6 +9,7 @@ env = {
   host: ENV.fetch('LOW_HOST', nil),
   port: ENV.fetch('LOW_PORT', nil),
   web_root: ENV.fetch('LOW_WEB_ROOT', nil),
+  debug_mode: Low::ConfigLoader.parse_boolean(ENV.fetch('LOW_DEBUG', true)),
   matrix_mode: Low::ConfigLoader.parse_boolean(ENV.fetch('LOW_MATRIX', nil)),
   mirror_mode: Low::ConfigLoader.parse_boolean(ENV.fetch('LOW_MIRROR', nil))
 }

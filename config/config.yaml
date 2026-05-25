@@ -1,6 +1,7 @@
 host: '127.0.0.1'
 port: 3000
 web_root: './public'
+debug_mode: true
 matrix_mode: true
 mirror_mode: true
 keep_alive_timeout: 30

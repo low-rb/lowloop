@@ -2,6 +2,7 @@
 
 require 'async'
 require 'io/wait'
+require 'paint'
 require 'socket'
 require 'low_type'
 require 'low_event'
@@ -51,7 +52,7 @@ class LowLoop
         task.async do
           handle_connection(socket)
         rescue StandardError => e
-          puts e.message
+          render_error(e)
         ensure
           socket&.close
         end
@@ -88,6 +89,21 @@ class LowLoop
   def hash = [self.class].hash
 
   private
+
+  def render_error(e)
+    puts "\nException:"
+    puts Paint[e.message, :red]
+    puts ''
+
+    if @config.debug_mode
+      Fiber.blocking do
+        puts Paint[e.backtrace.join("\n"), :blue]
+        puts ''
+        puts 'Press ENTER to continue...'
+        gets
+      end
+    end
+  end
 
   def handle_connection(socket)
     stream = Low::RequestParser.create_stream(socket:)
