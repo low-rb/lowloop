@@ -29,7 +29,7 @@ class LowLoop
     Low::Events::RequestEvent.define do |observers|
       observers << Low::FileServer.new(web_root: config.web_root, content_types: config.content_types)
       observers << router if router
-      observers.push(action: :mirror) if config.mirror_mode
+      observers.push(self, action: :mirror) if config.mirror_mode
     end
   end
 
