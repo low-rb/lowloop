@@ -10,7 +10,7 @@ module Low
 
         if File.exist?(file.path)
           response = Factories::ResponseFactory.file(path: file.path, content_type: file.content_type)
-          return Events::ResponseEvent.new(response:)
+          return Events::ResponseEvent.new(response:).tap { it.branch }
         end
 
         nil
