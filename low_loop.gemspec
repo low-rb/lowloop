@@ -11,7 +11,7 @@ Gem::Specification.new do |spec|
   spec.summary = 'An event-driven event loop'
   spec.description = 'An asynchronous server that creates events for your event-driven application to use'
   spec.homepage = 'https://github.com/low-rb/low_loop'
-  spec.required_ruby_version = '>= 3.3.0'
+  spec.required_ruby_version = '>= 3.4.0'
 
   spec.metadata['homepage_uri'] = spec.homepage
   spec.metadata['source_code_uri'] = 'https://github.com/low-rb/low_loop/src/branch/main'
