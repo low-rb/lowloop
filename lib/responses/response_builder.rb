@@ -37,7 +37,7 @@ module Low
       end
 
       def write_response_headers(socket, response)
-        response.headers.fields.each_slice(2) do |key, value|
+        response.headers.fields.each do |key, value|
           next if %w[content-length connection].include?(key.to_s.downcase)
 
           socket.puts "#{key}: #{value}\r\n"
