@@ -9,7 +9,7 @@ module Low
       class << self
         def html(body:)
           headers = Protocol::HTTP::Headers.new([['content-type', 'text/html']])
-          body = Protocol::HTTP::Body::Buffered.wrap(body)
+          body = Protocol::HTTP::Body::Buffered.wrap(body.strip)
 
           Protocol::HTTP::Response.new('HTTP/1.1', 200, headers, body)
         end
