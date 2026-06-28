@@ -90,18 +90,18 @@ class LowLoop
 
   private
 
-  def render_error(e)
+  def render_error(error)
     puts "\nException:"
-    puts Paint[e.message, :red]
+    puts Paint[error.message, :red]
     puts ''
 
-    if @config.debug_mode
-      Fiber.blocking do
-        puts Paint[e.backtrace.join("\n"), :blue]
-        puts ''
-        puts 'Press ENTER to continue...'
-        gets
-      end
+    return unless @config.debug_mode
+
+    Fiber.blocking do
+      puts Paint[error.backtrace.join("\n"), :blue]
+      puts ''
+      puts 'Press ENTER to continue...'
+      gets
     end
   end
 
