@@ -29,7 +29,7 @@ module Low
 
     # TODO: Define type: Events::RequestEvent
     def handle(event:)
-      filepath = Protocol::URL[event.request.path].path
+      filepath = Protocol::URL::Path.to_local_path(Protocol::URL[event.request.path].path)
 
       extension = extension(filepath:)
       return nil if extension.nil?

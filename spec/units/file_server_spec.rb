@@ -18,7 +18,8 @@ RSpec.describe Low::FileServer do
       txt: 'text/plain',
       jpg: 'image/jpeg',
       jpeg: 'image/jpeg',
-      png: 'image/png'
+      png: 'image/png',
+      svg: 'image/svg+xml'
     }
   end
   let(:request_event) { Low::Events::RequestEvent.new(request:) }
@@ -60,6 +61,20 @@ RSpec.describe Low::FileServer do
       end
 
       it 'strips the query params' do
+        file_server.handle(event: request_event)
+        expect(Low::Events::FileEvent).to have_received(:trigger).with(file:, request:)
+      end
+    end
+
+    context 'when the path has encoded spaces' do
+      let(:request) { Low::Support::RequestFactory.request(path: '/Event%20Tree.svg') }
+      let(:file) { Low::States::FileState.new(path: './public/Event Tree.svg', content_type: content_types[:svg]) }
+
+      before do
+        allow(Low::Events::FileEvent).to receive(:trigger)
+      end
+
+      it 'decodes the path' do
         file_server.handle(event: request_event)
         expect(Low::Events::FileEvent).to have_received(:trigger).with(file:, request:)
       end
