@@ -22,7 +22,7 @@ PATH
 PATH
   remote: .
   specs:
-    low_loop (0.7.1)
+    low_loop (0.7.2)
       async
       async-http
       io-stream
@@ -175,7 +175,7 @@ CHECKSUMS
   language_server-protocol (3.17.0.6) sha256=5ef2c0c138f8267e1bc631d3328347d354f96724b0af22f2c79516120443b7f0
   lint_roller (1.1.0) sha256=2c0c845b632a7d172cb849cc90c1bce937a28c5c8ccccb50dfd46a485003cc87
   low_event (0.7.1)
-  low_loop (0.7.1)
+  low_loop (0.7.2)
   low_type (1.3.2)
   lowkey (0.4.3) sha256=6607fa28cde96fc2322ff8c9893724f16bb71a78eb475b7883e5615c41c52c0d
   method_source (1.1.0) sha256=181301c9c45b731b4769bc81e8860e72f9161ad7d66dd99103c9ab84f560f5c5
