@@ -82,13 +82,13 @@ GEM
       racc
     prism (1.9.0)
     protocol-hpack (1.5.1)
-    protocol-http (0.69.0)
+    protocol-http (0.70.0)
     protocol-http1 (0.40.2)
       protocol-http (~> 0.68)
     protocol-http2 (0.26.2)
       protocol-hpack (~> 1.4)
       protocol-http (~> 0.62)
-    protocol-url (0.10.0)
+    protocol-url (0.11.0)
     providers (0.6.2)
       expressions (~> 0.1)
     pry (0.14.2)
@@ -160,6 +160,7 @@ CHECKSUMS
   async-http (0.99.0) sha256=665eba5e530b05a9682c78b3aa5a51e97dd67b8b25b71ba76530b60cf6c26a11
   async-pool (0.11.2) sha256=0a43a17b02b04d9c451b7d12fafa9a50e55dc6dd00d4369aca00433f16a7e3ed
   benchmark (0.5.0) sha256=465df122341aedcb81a2a24b4d3bd19b6c67c1530713fd533f3ff034e419236c
+  bundler (4.0.12) sha256=7f8b757d28dfb636e7b24fba2344ac6dd13b5b24f4b46d62573d483f211825ac
   coderay (1.1.3) sha256=dc530018a4684512f8f38143cd2a096c9f02a1fc2459edcfe534787a7fc77d4b
   console (1.37.0) sha256=8093b286c2595a063849c098594fee5155ecc7967d36f3aa8cbe7569c8f3efd7
   diff-lcs (1.6.2) sha256=9ae0d2cba7d4df3075fe8cd8602a8604993efc0dfa934cff568969efb1909962
@@ -186,10 +187,10 @@ CHECKSUMS
   parser (3.3.12.0) sha256=21a6d7f755d5a24dfbdc6e6b772e4e879a52e7631a88bc5a3a134606052c9828
   prism (1.9.0) sha256=7b530c6a9f92c24300014919c9dcbc055bf4cdf51ec30aed099b06cd6674ef85
   protocol-hpack (1.5.1) sha256=6feca238b8078da1cd295677d6f306c6001af92d75fe0643d33e6956cbc3ad91
-  protocol-http (0.69.0) sha256=787d3b722db663c8067a6e58dac08ed2c2d009b8064537173b8189e52a15ba25
+  protocol-http (0.70.0) sha256=3d7e881be723c57191fcdf04ad238570cabca81142a1d64516f676eafcb913ad
   protocol-http1 (0.40.2) sha256=add1191f06f16077b2e319ec5cf38c8623a2d2a9829f88a36ebaf8ecf80748a9
   protocol-http2 (0.26.2) sha256=1457cfaa31877512c349051e0094ea170b8913a62d966b82ff7cd14e4b1a3ede
-  protocol-url (0.10.0) sha256=427ac29e6de221acc01def248d1c6f7e2c1ab7bc7a2380577acce93a7a669b0b
+  protocol-url (0.11.0) sha256=eeac547dc2ba370b26d17861fd1c77455170e24d7bd5cfebb1123395deab7d54
   providers (0.6.2)
   pry (0.14.2) sha256=c4fe54efedaca1d351280b45b8849af363184696fcac1c72e0415f9bdac4334d
   pry-nav (1.0.0) sha256=616b57f84ca478e606f28b04bbc218dc32818885ddea86903c6fc58171a99354
@@ -211,4 +212,4 @@ CHECKSUMS
   unicode-emoji (4.2.0) sha256=519e69150f75652e40bf736106cfbc8f0f73aa3fb6a65afe62fefa7f80b0f80f
 
 BUNDLED WITH
-  4.0.8
+  4.0.12
