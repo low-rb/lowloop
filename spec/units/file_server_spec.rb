@@ -9,9 +9,10 @@ require_relative '../../lib/servers/file_server'
 require_relative '../factories/request_factory'
 
 RSpec.describe Low::FileServer do
-  # Specs are run from project root.
-  subject(:file_server) { described_class.new(web_root: './public', content_types:) }
+  subject(:file_server) { described_class.new(web_root:, content_types:) }
 
+  # Specs are run from project root.
+  let(:web_root) { File.expand_path('public', Dir.pwd) }
   let(:content_types) do
     {
       html: 'text/html',
@@ -19,7 +20,7 @@ RSpec.describe Low::FileServer do
       jpg: 'image/jpeg',
       jpeg: 'image/jpeg',
       png: 'image/png',
-      svg: 'image/svg+xml'
+      svg: 'image/svg+xml',
     }
   end
   let(:request_event) { Low::Events::RequestEvent.new(request:) }
@@ -48,13 +49,12 @@ RSpec.describe Low::FileServer do
     it 'returns a file response' do
       response_event = file_server.handle(event: request_event)
       expect(response_event.response).to have_attributes(body: be_instance_of(Protocol::HTTP::Body::File))
-      expect(response_event.response.body.file).to have_attributes(to_path: './public/cave.jpg')
+      expect(response_event.response.body.file).to have_attributes(to_path: File.expand_path('cave.jpg', web_root))
     end
 
     context 'when the path has query params' do
       let(:request) { Low::Support::RequestFactory.request(path: '/cave.jpg?dimensions=200x200&treasure=ruby') }
-      # TODO: Test doesn't appear to care if ":jpg" is any other value; should fail. Value object related?
-      let(:file) { Low::States::FileState.new(path: './public/cave.jpg', content_type: content_types[:jpg]) }
+      let(:file) { Low::States::FileState.new(path: File.expand_path('cave.jpg', web_root), content_type: content_types[:jpg]) }
 
       before do
         allow(Low::Events::FileEvent).to receive(:trigger)
@@ -68,7 +68,7 @@ RSpec.describe Low::FileServer do
 
     context 'when the path has encoded spaces' do
       let(:request) { Low::Support::RequestFactory.request(path: '/Event%20Tree.svg') }
-      let(:file) { Low::States::FileState.new(path: './public/Event Tree.svg', content_type: content_types[:svg]) }
+      let(:file) { Low::States::FileState.new(path: File.expand_path('Event Tree.svg', web_root), content_type: content_types[:svg]) }
 
       before do
         allow(Low::Events::FileEvent).to receive(:trigger)
@@ -88,9 +88,8 @@ RSpec.describe Low::FileServer do
         allow(Low::Events::FileEvent).to receive(:trigger)
       end
 
-      it 'strips the directory traversal segments' do
-        file_server.handle(event: request_event)
-        expect(Low::Events::FileEvent).to have_received(:trigger).with(file:, request:)
+      it 'raises argument error' do
+        expect { file_server.handle(event: request_event) }.to raise_error(ArgumentError, "Path escapes the specified root!")
       end
     end
   end

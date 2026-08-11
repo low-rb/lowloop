@@ -29,21 +29,14 @@ module Low
 
     # TODO: Define type: Events::RequestEvent
     def handle(event:)
-      filepath = Protocol::URL::Path.to_local_path(Protocol::URL[event.request.path].path)
+      filepath = Protocol::URL[event.request.path].local_path(@web_root)
 
       extension = extension(filepath:)
       return nil if extension.nil?
 
-      file = States::FileState.new(path: safe_path(filepath), content_type: @content_types[extension])
+      file = States::FileState.new(path: filepath, content_type: @content_types[extension])
 
       Events::FileEvent.trigger(file:, request: event.request)
-    end
-
-    private
-
-    def safe_path(path)
-      safe_path = path.split('/').reject { |segment| ['.', '..'].include?(segment) }.join('/')
-      File.join(@web_root, safe_path)
     end
   end
 end
