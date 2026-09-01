@@ -15,12 +15,12 @@ require_relative 'support/low_frame'
 class LowLoop
   include Observers
 
-  attr_reader :config
+  attr_reader :config, :frame
 
   def initialize(config:, router: nil, renderer: nil, show_output: true)
     @config = config
     @connection_manager = Low::ConnectionManager.new(config:)
-    @frame = LowFrame.new(renderer:, fps: 10, show_output:)
+    @frame = LowFrame.new(renderer: (renderer if config.matrix_mode), fps: 10, show_output:)
 
     Low::Events::RequestEvent.define do |observers|
       observers << Low::FileServer.new(web_root: config.web_root, content_types: config.content_types)
