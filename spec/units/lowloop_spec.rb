@@ -43,6 +43,28 @@ RSpec.describe LowLoop do
     end
   end
 
+  describe '#initialize' do
+    subject(:frame_renderer) { described_class.new(config:, renderer:, show_output: false).frame.renderer }
+
+    let(:renderer) { double(Object, render: nil) }
+
+    context 'when config.matrix_mode is false' do
+      let(:config) { Low::ConfigLoader.load('./spec/fixtures/config.yaml', matrix_mode: false) }
+
+      it 'does not give the frame a renderer, even though one was passed in' do
+        expect(frame_renderer).to be_nil
+      end
+    end
+
+    context 'when config.matrix_mode is true' do
+      let(:config) { Low::ConfigLoader.load('./spec/fixtures/config.yaml', matrix_mode: true) }
+
+      it 'gives the frame the renderer' do
+        expect(frame_renderer).to eq(renderer)
+      end
+    end
+  end
+
   # TODO: Debugging is made easier when non-async so add a synchronous debug mode and test this.
   # context 'when in debug mode (synchronous)'
 
