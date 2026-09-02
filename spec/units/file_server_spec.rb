@@ -20,7 +20,7 @@ RSpec.describe Low::FileServer do
       jpg: 'image/jpeg',
       jpeg: 'image/jpeg',
       png: 'image/png',
-      svg: 'image/svg+xml',
+      svg: 'image/svg+xml'
     }
   end
   let(:request_event) { Low::Events::RequestEvent.new(request:) }
@@ -89,7 +89,7 @@ RSpec.describe Low::FileServer do
       end
 
       it 'raises argument error' do
-        expect { file_server.handle(event: request_event) }.to raise_error(ArgumentError, "Path escapes the specified root!")
+        expect { file_server.handle(event: request_event) }.to raise_error(ArgumentError, 'Path escapes the specified root!')
       end
     end
   end
