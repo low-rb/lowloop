@@ -68,14 +68,6 @@ class LowLoop
     server
   end
 
-  def render
-    Async do
-      loop do
-        @frame.render
-      end
-    end
-  end
-
   # Fallback mode for when there's no dependencies and you want to know that the server is still working.
   def mirror(event:)
     request = event.request
