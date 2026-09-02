@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 require 'async'
-require 'io/wait'
 require 'paint'
 require 'socket'
 require 'low_type'
@@ -9,21 +8,18 @@ require 'low_event'
 require 'observers'
 
 require_relative 'factories/response_factory'
-require_relative 'requests/request_parser'
-require_relative 'responses/response_builder'
+require_relative 'connections/connection_manager'
 require_relative 'servers/file_server'
 require_relative 'support/low_frame'
 
 class LowLoop
   include Observers
 
-  DEFAULT_KEEP_ALIVE_TIMEOUT = 30
-  DEFAULT_REQUEST_TIMEOUT = 10
-
   attr_reader :config
 
   def initialize(config:, router: nil, renderer: nil, show_output: true)
     @config = config
+    @connection_manager = Low::ConnectionManager.new(config:)
     @frame = LowFrame.new(renderer:, fps: 10, show_output:)
 
     Low::Events::RequestEvent.define do |observers|
@@ -43,7 +39,7 @@ class LowLoop
         socket = server.accept
 
         task.async do
-          handle_connection(socket)
+          @connection_manager.handle_connection(socket:)
         rescue StandardError => e
           render_error(e)
         ensure
@@ -99,54 +95,5 @@ class LowLoop
       puts 'Press ENTER to continue...'
       gets
     end
-  end
-
-  def handle_connection(socket)
-    stream = Low::RequestParser.create_stream(socket:)
-    keep_alive = true
-    version = nil
-
-    while keep_alive
-      break unless socket.wait_readable(keep_alive_timeout)
-
-      socket.timeout = request_timeout
-      begin
-        request = Low::RequestParser.parse(stream:, host: config.host, port: config.port, version:)
-      rescue IO::TimeoutError
-        break
-      ensure
-        socket.timeout = nil
-      end
-      break if request.nil?
-
-      version ||= request.version
-      keep_alive = keep_alive?(request)
-
-      # TODO: Handle nil return value; create 500 status code response.
-      response_event = Low::Events::RequestEvent.take(request:)
-      response = response_event.response
-
-      Low::ResponseBuilder.respond(config:, socket:, response:, keep_alive:)
-    end
-  end
-
-  def keep_alive?(request)
-    tokens = (request.headers['connection'] || []).flat_map do |value|
-      value.split(',').map { |token| token.strip.downcase }
-    end
-
-    if request.version.to_s.downcase.include?('1.0')
-      tokens.include?('keep-alive')
-    else
-      !tokens.include?('close')
-    end
-  end
-
-  def keep_alive_timeout
-    config.keep_alive_timeout || DEFAULT_KEEP_ALIVE_TIMEOUT
-  end
-
-  def request_timeout
-    config.request_timeout || DEFAULT_REQUEST_TIMEOUT
   end
 end
