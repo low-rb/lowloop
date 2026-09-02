@@ -37,15 +37,8 @@ class LowLoop
     server = start_server
 
     Async do |task|
-      # Background task.
-      task.async do
-        loop do
-          @frame.render if @frame.renderer
-          sleep 0.1 # 10fps
-        end
-      end
+      render_frame(task)
 
-      # Request handler.
       loop do
         socket = server.accept
 
@@ -81,6 +74,18 @@ class LowLoop
     server.listen(10)
     server
   end
+
+  def render_frame(task)
+    return unless @frame.renderer
+
+    task.async do
+      loop do
+        @frame.render
+        sleep 0.1 # 10fps
+      end
+    end
+  end
+
   def render_error(error)
     puts "\nException:"
     puts Paint[error.message, :red]
