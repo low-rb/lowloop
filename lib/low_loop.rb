@@ -60,14 +60,6 @@ class LowLoop
     end
   end
 
-  def start_server
-    puts "Starting server @ #{config.host}:#{config.port}" unless config.matrix_mode
-
-    server = TCPServer.new(config.host, config.port)
-    server.listen(10)
-    server
-  end
-
   # Fallback mode for when there's no dependencies and you want to know that the server is still working.
   def mirror(event:)
     request = event.request
@@ -82,6 +74,13 @@ class LowLoop
 
   private
 
+  def start_server
+    puts "Starting server @ #{config.host}:#{config.port}" unless config.matrix_mode
+
+    server = TCPServer.new(config.host, config.port)
+    server.listen(10)
+    server
+  end
   def render_error(error)
     puts "\nException:"
     puts Paint[error.message, :red]
