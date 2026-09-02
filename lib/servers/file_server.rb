@@ -18,8 +18,8 @@ module Low
       observers(Events::FileEvent) << FileResponse
     end
 
-    def extension(filepath:)
-      extension = File.extname(filepath).delete_prefix('.')
+    def extension(file_path:)
+      extension = File.extname(file_path).delete_prefix('.')
 
       return nil if extension == ''
       return nil unless @content_types.key?(extension)
@@ -27,14 +27,17 @@ module Low
       extension
     end
 
-    # TODO: Define type: Events::RequestEvent
-    def handle(event:)
-      filepath = Protocol::URL[event.request.path].local_path(@web_root)
+    def handle(event: Events::RequestEvent)
+      file_path = event.request.path
 
-      extension = extension(filepath:)
+      return nil unless file_path.include?('.')
+
+      url = Protocol::URL[file_path]
+      extension = extension(file_path: url.path.to_s)
       return nil if extension.nil?
 
-      file = States::FileState.new(path: filepath, content_type: @content_types[extension])
+      file_path = url.local_path(@web_root)
+      file = States::FileState.new(path: file_path, content_type: @content_types[extension])
 
       Events::FileEvent.trigger(file:, request: event.request)
     end

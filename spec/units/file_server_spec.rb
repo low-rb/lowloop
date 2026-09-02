@@ -30,7 +30,7 @@ RSpec.describe Low::FileServer do
       let(:request) { Low::Support::RequestFactory.request(path: '/cave.jpg') }
 
       it 'returns true for supported extensions' do
-        expect(file_server.extension(filepath: request.path)).to eq('jpg')
+        expect(file_server.extension(file_path: request.path)).to eq('jpg')
       end
     end
 
@@ -38,7 +38,7 @@ RSpec.describe Low::FileServer do
       let(:request) { Low::Support::RequestFactory.request(path: '/virus.exe') }
 
       it 'returns nil for unsupported extensions' do
-        expect(file_server.extension(filepath: request.path)).to eq(nil)
+        expect(file_server.extension(file_path: request.path)).to eq(nil)
       end
     end
   end
