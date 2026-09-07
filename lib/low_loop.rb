@@ -7,7 +7,7 @@ require 'low_type'
 require 'low_event'
 require 'observers'
 
-require_relative 'factories/response_factory'
+require_relative 'responses/response_factory'
 require_relative 'connections/connection_manager'
 require_relative 'servers/file_server'
 require_relative 'support/low_frame'
@@ -52,7 +52,7 @@ class LowLoop
   # Fallback mode for when there's no dependencies and you want to know that the server is still working.
   def mirror(event:)
     request = event.request
-    response = Low::Factories::ResponseFactory.html(body: "Thank you for visiting #{request.path} with body: '#{request.body}'")
+    response = tories::ResponseFactory.html(body: "Thank you for visiting #{request.path} with body: '#{request.body}'")
     Low::Events::ResponseEvent.new(response:)
   end
 

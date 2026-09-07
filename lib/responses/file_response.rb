@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require_relative '../factories/response_factory'
+require_relative '../responses/response_factory'
 
 module Low
   class FileResponse
@@ -9,7 +9,7 @@ module Low
         file = event.file
 
         if File.exist?(file.path)
-          response = Factories::ResponseFactory.file(path: file.path, content_type: file.content_type)
+          response = ResponseFactory.file(path: file.path, content_type: file.content_type)
           return Events::ResponseEvent.new(response:).tap(&:branch)
         end
 

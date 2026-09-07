@@ -2,9 +2,9 @@
 
 require 'protocol/http'
 
-require_relative '../../../lib/factories/response_factory'
+require_relative '../../../lib/responses/response_factory'
 
-RSpec.describe Low::Factories::ResponseFactory do
+RSpec.describe Low::ResponseFactory do
   describe '.html' do
     subject(:response) { described_class.html(body: 'Hi') }
 

@@ -9,7 +9,7 @@ require 'protocol/http'
 require 'socket'
 
 require 'low_event'
-require_relative '../../lib/factories/response_factory'
+require_relative '../../lib/responses/response_factory'
 require_relative '../../lib/support/config_loader'
 require_relative '../../lib/low_loop'
 require_relative '../factories/request_factory'
@@ -27,7 +27,7 @@ RSpec.describe LowLoop do
   end
 
   let(:request) { Low::Support::RequestFactory.request(path: '/') }
-  let(:response) { Low::Factories::ResponseFactory.html(body: 'Hi') }
+  let(:response) { Low::ResponseFactory.html(body: 'Hi') }
 
   let(:endpoint) { "http://#{config.host}:#{config.port}" }
   let(:client) { Async::HTTP::Internet.new }
@@ -73,7 +73,7 @@ RSpec.describe LowLoop do
     end
 
     context 'when the request is a path' do
-      let(:response) { Low::Factories::ResponseFactory.html(body: 'Hello') }
+      let(:response) { Low::ResponseFactory.html(body: 'Hello') }
 
       it 'responds with a buffered body' do
         expect(Net::HTTP.get_response(URI.parse(endpoint)).body.strip).to eq('Hello')
@@ -81,7 +81,7 @@ RSpec.describe LowLoop do
     end
 
     context 'when the request is a filepath' do
-      let(:response) { Low::Factories::ResponseFactory.file(path: './public/cave.jpg', content_type: 'jpg') }
+      let(:response) { Low::ResponseFactory.file(path: './public/cave.jpg', content_type: 'jpg') }
 
       it 'responds with a file body' do
         http_response = Net::HTTP.get_response(URI.parse(endpoint))
