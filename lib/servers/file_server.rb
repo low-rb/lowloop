@@ -27,7 +27,7 @@ module Low
       extension
     end
 
-    def handle(event: Events::RequestEvent)
+    def request(event: Events::RequestEvent)
       file_path = event.request.path
 
       return nil unless file_path.include?('.')
