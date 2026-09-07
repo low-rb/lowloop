@@ -35,7 +35,6 @@ module Low
         version ||= request.version
         keep_alive = keep_alive?(request)
 
-        # TODO: Handle nil return value; create 500 status code response.
         response_event = Events::RequestEvent.take(request:)
         response = response_event.response
 
