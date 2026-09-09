@@ -58,12 +58,12 @@ RSpec.describe Low::FileServer do
       let(:file) { Low::States::FileState.new(path: File.expand_path('cave.jpg', web_root), content_type: content_types[:jpg]) }
 
       before do
-        allow(Low::Events::FileEvent).to receive(:trigger)
+        allow(Low::Events::FileEvent).to receive(:take)
       end
 
       it 'strips the query params' do
-        expect(Low::Events::FileEvent).to have_received(:trigger).with(file:, request:)
         file_server.request(event: request_event)
+        expect(Low::Events::FileEvent).to have_received(:take).with(file:, request:)
       end
     end
 
@@ -72,12 +72,12 @@ RSpec.describe Low::FileServer do
       let(:file) { Low::States::FileState.new(path: File.expand_path('Event Tree.svg', web_root), content_type: content_types[:svg]) }
 
       before do
-        allow(Low::Events::FileEvent).to receive(:trigger)
+        allow(Low::Events::FileEvent).to receive(:take)
       end
 
       it 'decodes the path' do
-        expect(Low::Events::FileEvent).to have_received(:trigger).with(file:, request:)
         file_server.request(event: request_event)
+        expect(Low::Events::FileEvent).to have_received(:take).with(file:, request:)
       end
     end
 
@@ -86,7 +86,7 @@ RSpec.describe Low::FileServer do
       let(:file) { Low::States::FileState.new(path: './public/etc/passwd.txt', content_type: content_types[:txt]) }
 
       before do
-        allow(Low::Events::FileEvent).to receive(:trigger)
+        allow(Low::Events::FileEvent).to receive(:take)
       end
 
       it 'raises argument error' do

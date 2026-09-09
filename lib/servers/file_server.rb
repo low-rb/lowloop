@@ -39,7 +39,7 @@ module Low
       file_path = url.local_path(@web_root)
       file = States::FileState.new(path: file_path, content_type: @content_types[extension])
 
-      Events::FileEvent.trigger(file:, request: event.request)
+      Events::FileEvent.take(file:, request: event.request)
     end
   end
 end
