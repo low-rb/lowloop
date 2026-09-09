@@ -1,7 +1,7 @@
 PATH
   remote: ../low_event
   specs:
-    low_event (0.7.1)
+    low_event (0.8.0)
       low_type (~> 1.0)
       observers
       protocol-http
@@ -17,12 +17,12 @@ PATH
 PATH
   remote: ../observers
   specs:
-    observers (0.8.0)
+    observers (0.9.0)
 
 PATH
   remote: .
   specs:
-    low_loop (0.7.2)
+    low_loop (0.8.0)
       async
       async-http
       io-stream
@@ -68,7 +68,7 @@ GEM
     io-event (1.21.1)
     io-stream (0.14.0)
       openssl (>= 3.3)
-    json (3.0.0)
+    json (3.0.1)
     language_server-protocol (3.17.0.6)
     lint_roller (1.1.0)
     lowkey (0.4.3)
@@ -172,15 +172,15 @@ CHECKSUMS
   io-endpoint (0.18.0) sha256=720d186bcd584e8ba490bfc91dab332cc3c5ffee848b5b03894555cb275151aa
   io-event (1.21.1) sha256=b3088f89ad67edf9be9fc2f48a5fae0790e92862487551eeb337b49098eb99e6
   io-stream (0.14.0) sha256=07d9b13ea2066ccbbc761fff8d69ad5a31e47561d31e02cc271f3ed9c1a8f1cd
-  json (3.0.0) sha256=1ff82a28c05c5cc7b646f3e3a3ac710e4ae2aa933690cba12f1f650b0ecdeb99
+  json (3.0.1) sha256=c80f74a3570c3a310cd41c526904e7ef8363abdece4432f31fe97d812bc4a39e
   language_server-protocol (3.17.0.6) sha256=5ef2c0c138f8267e1bc631d3328347d354f96724b0af22f2c79516120443b7f0
   lint_roller (1.1.0) sha256=2c0c845b632a7d172cb849cc90c1bce937a28c5c8ccccb50dfd46a485003cc87
-  low_event (0.7.1)
-  low_loop (0.7.2)
+  low_event (0.8.0)
+  low_loop (0.8.0)
   low_type (1.3.2)
   lowkey (0.4.3) sha256=6607fa28cde96fc2322ff8c9893724f16bb71a78eb475b7883e5615c41c52c0d
   method_source (1.1.0) sha256=181301c9c45b731b4769bc81e8860e72f9161ad7d66dd99103c9ab84f560f5c5
-  observers (0.8.0)
+  observers (0.9.0)
   openssl (4.0.2) sha256=1037ad2868ae58df9ad917891c0c0f9815a1172f6846d4bcdd508e4c2ee747c2
   ostruct (0.6.3) sha256=95a2ed4a4bd1d190784e666b47b2d3f078e4a9efda2fccf18f84ddc6538ed912
   paint (2.3.0) sha256=327d623e4038619d5bd99ae5db07973859cd78400c7f0329eea283cef8e83be5
