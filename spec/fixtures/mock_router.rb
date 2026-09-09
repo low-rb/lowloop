@@ -6,7 +6,7 @@ require_relative '../../lib/low_loop'
 class MockRouter
   include Observers
 
-  def handle(event:)
+  def request(event:)
     # Return value is stubbed.
   end
 end

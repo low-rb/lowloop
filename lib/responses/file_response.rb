@@ -5,7 +5,7 @@ require_relative '../responses/response_factory'
 module Low
   class FileResponse
     class << self
-      def handle(event:)
+      def request(event:)
         file = event.file
 
         if File.exist?(file.path)

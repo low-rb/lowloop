@@ -43,11 +43,12 @@ RSpec.describe Low::FileServer do
     end
   end
 
-  describe '#handle' do
+  describe '#request' do
     let(:request) { Low::Support::RequestFactory.request(path: '/cave.jpg') }
 
+    # FileEvent.take is not stubbed and that's important. We're testing the wiring too.
     it 'returns a file response' do
-      response_event = file_server.handle(event: request_event)
+      response_event = file_server.request(event: request_event)
       expect(response_event.response).to have_attributes(body: be_instance_of(Protocol::HTTP::Body::File))
       expect(response_event.response.body.file).to have_attributes(to_path: File.expand_path('cave.jpg', web_root))
     end
@@ -61,8 +62,8 @@ RSpec.describe Low::FileServer do
       end
 
       it 'strips the query params' do
-        file_server.handle(event: request_event)
         expect(Low::Events::FileEvent).to have_received(:trigger).with(file:, request:)
+        file_server.request(event: request_event)
       end
     end
 
@@ -75,8 +76,8 @@ RSpec.describe Low::FileServer do
       end
 
       it 'decodes the path' do
-        file_server.handle(event: request_event)
         expect(Low::Events::FileEvent).to have_received(:trigger).with(file:, request:)
+        file_server.request(event: request_event)
       end
     end
 
@@ -89,7 +90,7 @@ RSpec.describe Low::FileServer do
       end
 
       it 'raises argument error' do
-        expect { file_server.handle(event: request_event) }.to raise_error(ArgumentError, 'Path escapes the specified root!')
+        expect { file_server.request(event: request_event) }.to raise_error(ArgumentError, 'Path escapes the specified root!')
       end
     end
   end

@@ -41,7 +41,7 @@ RSpec.describe LowLoop do
   end
 
   before do
-    allow(router).to receive(:handle).and_return(response_event(response:))
+    allow(router).to receive(:request).and_return(response_event(response:))
   end
 
   context 'without a server' do
@@ -67,7 +67,7 @@ RSpec.describe LowLoop do
 
     before do
       # Delay response to mimic IO.
-      allow(router).to receive(:handle) do
+      allow(router).to receive(:request) do
         response_event(response:, delay_duration: 1)
       end
     end
@@ -110,7 +110,7 @@ RSpec.describe LowLoop do
           end
         end.real
 
-        expect(router).to have_received(:handle).exactly(request_count).times
+        expect(router).to have_received(:request).exactly(request_count).times
         expect(duration).to be < 1.2
       end
     end
