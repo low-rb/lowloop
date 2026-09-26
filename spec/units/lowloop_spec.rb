@@ -8,32 +8,25 @@ require 'async/http/internet'
 require 'protocol/http'
 require 'socket'
 
-require 'low_event'
+require 'lowevent'
 require_relative '../../lib/responses/response_factory'
 require_relative '../../lib/support/config_loader'
-require_relative '../../lib/low_loop'
+require_relative '../../lib/lowloop'
 require_relative '../factories/request_factory'
 require_relative '../fixtures/mock_router'
 
 RSpec.describe LowLoop do
   # In async mode we reinstantiate low loop in its own thread, but use the same config and observers.
-  subject!(:low_loop) { described_class.new(config:, router:) }
+  subject!(:lowloop) { described_class.new(config:, router:) }
 
-  let(:config) do
-    Low::ConfigLoader.load('./spec/fixtures/config.yaml')
-  end
-  let(:router) do
-    MockRouter.new
-  end
+  let(:config) { Low::ConfigLoader.load('./spec/fixtures/config.yaml') }
+  let(:router) { MockRouter.new }
 
   let(:request) { Low::Support::RequestFactory.request(path: '/') }
   let(:response) { Low::ResponseFactory.html(body: 'Hi') }
 
   let(:endpoint) { "http://#{config.host}:#{config.port}" }
   let(:client) { Async::HTTP::Internet.new }
-  # Or could be more direct:
-  # endpoint = Async::HTTP::Endpoint["http://#{config.host}:#{config.port}"]
-  # client = Async::HTTP::Client.new(endpoint)
 
   def response_event(response:, delay_duration: 0)
     sleep delay_duration if delay_duration > 0

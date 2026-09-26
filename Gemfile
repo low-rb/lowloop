@@ -2,12 +2,12 @@
 
 source 'https://gem.coop'
 
-# Specify your gem's dependencies in low_loop.gemspec
+# Specify your gem's dependencies in lowloop.gemspec
 gemspec
 
 group :development do
-  gem 'low_event', path: '../low_event'
-  gem 'low_type', path: '../low_type'
+  gem 'lowevent', path: '../lowevent'
+  gem 'lowtype', path: '../lowtype'
   gem 'observers', path: '../observers'
 
   gem 'benchmark'
