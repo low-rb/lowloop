@@ -3,8 +3,8 @@
 require 'async'
 require 'paint'
 require 'socket'
-require 'low_type'
-require 'low_event'
+require 'lowtype'
+require 'lowevent'
 require 'observers'
 
 require_relative 'responses/response_factory'

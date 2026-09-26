@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 require 'protocol/http/body/file'
-require 'low_event'
+require 'lowevent'
 require 'observers'
 
 require_relative '../../lib/events/file_event'

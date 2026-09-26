@@ -4,11 +4,11 @@
 
 Install the gem and add to the application's Gemfile by executing:
 
-    $ bundle add low_loop
+    $ bundle add lowloop
 
 If bundler is not being used to manage dependencies, install the gem by executing:
 
-    $ gem install low_loop
+    $ gem install lowloop
 
 ## Development
 
@@ -36,4 +36,4 @@ Fiber.blocking { binding.irb }
 
 ## Contributing
 
-Bug reports and pull requests are welcome on GitHub at https://github.com/low-rb/low_loop.
+Bug reports and pull requests are welcome on GitHub at https://github.com/low-rb/lowloop.
