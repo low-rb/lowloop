@@ -17,6 +17,7 @@ class LowFrame
   end
 
   def render
+    return unless @show_output
     return unless @last_frame.nil? || (current_timestamp - @last_frame) >= @frame_time
 
     @last_frame = current_timestamp

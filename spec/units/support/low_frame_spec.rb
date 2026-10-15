@@ -3,9 +3,10 @@
 require_relative '../../../lib/support/low_frame'
 
 RSpec.describe LowFrame do
-  subject(:low_frame) { described_class.new(renderer:, fps:, show_output: true) }
+  subject(:low_frame) { described_class.new(renderer:, fps:, show_output:) }
 
   let(:renderer) { double(Object, render: nil) }
+  let(:show_output) { true }
 
   describe '#render' do
     context 'when 2 FPS' do
@@ -21,6 +22,17 @@ RSpec.describe LowFrame do
 
         # Once for the initial render, then 2 to 3 times because integer precision reduces frame duration?
         expect(renderer).to have_received(:render).at_least(3).times.at_most(5).times
+      end
+    end
+
+    context 'when show_output is false' do
+      let(:show_output) { false }
+      let(:fps) { 10 }
+
+      it 'never calls the renderer' do
+        3.times { low_frame.render }
+
+        expect(renderer).not_to have_received(:render)
       end
     end
   end
