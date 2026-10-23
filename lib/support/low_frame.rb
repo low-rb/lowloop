@@ -3,6 +3,9 @@
 require 'io/console'
 
 class LowFrame
+  # Used when there's no real console to query a size from (e.g. no TTY -- headless/backgrounded process).
+  DEFAULT_SCREEN_SIZE = { row_count: 24, column_count: 80 }.freeze
+
   attr_reader :screen_size, :renderer
 
   def initialize(renderer:, fps: 10, show_output: true)
@@ -41,6 +44,11 @@ class LowFrame
   end
 
   def resize
+    unless IO.console
+      @screen_size = DEFAULT_SCREEN_SIZE
+      return
+    end
+
     row_count, column_count = IO.console.winsize
     @screen_size = { row_count:, column_count: }
   end
