@@ -24,4 +24,30 @@ RSpec.describe LowFrame do
       end
     end
   end
+
+  describe '#resize' do
+    let(:fps) { 10 }
+
+    context 'when there is no real console (e.g. no TTY, a headless/backgrounded process)' do
+      before { allow(IO).to receive(:console).and_return(nil) }
+
+      it 'does not raise' do
+        expect { low_frame }.not_to raise_error
+      end
+
+      it 'falls back to a default screen size instead of leaving it unset' do
+        expect(low_frame.screen_size).to eq(row_count: 24, column_count: 80)
+      end
+    end
+
+    context 'when there is a real console' do
+      let(:console) { instance_double(IO, winsize: [40, 120]) }
+
+      before { allow(IO).to receive(:console).and_return(console) }
+
+      it 'uses the real console size' do
+        expect(low_frame.screen_size).to eq(row_count: 40, column_count: 120)
+      end
+    end
+  end
 end
