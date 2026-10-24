@@ -5,6 +5,15 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 Minor features that don't break backwards compatibility are released as patches.
 
+## 0.8.4
+
+### Fixed
+
+- Requests with a body closed the connection instead of being parsed
+- Responses without a body closed the connection instead of being sent
+- Errors closed the connection instead of responding with a 500
+- Waiting for ENTER after an error stopped the server responding, now only the matrix is paused
+
 ## 0.8.0
 
 ### Changed
