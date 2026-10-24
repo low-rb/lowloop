@@ -57,6 +57,18 @@ RSpec.describe Low::ResponseBuilder do
     end
   end
 
+  context 'with a body' do
+    let(:response) { response_with([['content-type', 'text/html']]) }
+
+    it 'writes the head and body in a single write' do
+      allow(socket).to receive(:write).and_call_original
+      respond
+      expect(socket).to have_received(:write).once
+      expect(output).to start_with("HTTP/1.1 200\r\n")
+      expect(output).to end_with("\r\n\r\nHi")
+    end
+  end
+
   context 'with a body of many chunks' do
     let(:response) { Protocol::HTTP::Response.new('HTTP/1.1', 200, Protocol::HTTP::Headers.new, Protocol::HTTP::Body::Buffered.new(%w[Deer to be different])) }
 
