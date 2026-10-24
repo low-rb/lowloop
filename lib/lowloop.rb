@@ -19,7 +19,7 @@ class LowLoop
 
   def initialize(config:, router: nil, renderer: nil, show_output: true)
     @config = config
-    @connection_manager = Low::ConnectionManager.new(config:)
+    @connection_manager = Low::ConnectionManager.new(config:, on_error: method(:render_error))
     @frame = LowFrame.new(renderer: (renderer if config.matrix_mode), fps: 10, show_output:)
 
     Low::Events::RequestEvent.define do |observers|
@@ -52,7 +52,7 @@ class LowLoop
   # Fallback mode for when there's no dependencies and you want to know that the server is still working.
   def mirror(event:)
     request = event.request
-    response = Low::ResponseFactory.html(body: "Thank you for visiting #{request.path} with body: '#{request.body}'")
+    response = Low::ResponseFactory.html(body: "Thank you for visiting #{request.path} with body: '#{request.body&.join}'")
     Low::Events::ResponseEvent.new(response:)
   end
 
@@ -87,13 +87,26 @@ class LowLoop
     puts Paint[error.message, :red]
     puts ''
 
-    return unless @config.debug_mode
-
-    Fiber.blocking do
-      puts Paint[error.backtrace.join("\n"), :blue]
+    if @config.debug_mode
+      puts Paint[error.backtrace&.join("\n"), :blue]
       puts ''
-      puts 'Press ENTER to continue...'
-      gets
+    end
+
+    pause_frame if @frame.renderer
+  end
+
+  # Renderers replaces the screen every frame, so pause it to keep the error on screen until ENTER is pressed.
+  def pause_frame
+    return if @frame.paused?
+
+    @frame.pause
+    puts 'Press ENTER to continue...'
+
+    # Non-blockinly wait for IO. The main event loop keeps responding to requests while the frame is paused.
+    Async do
+      $stdin.gets
+    ensure
+      @frame.resume
     end
   end
 end

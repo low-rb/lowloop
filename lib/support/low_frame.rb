@@ -20,10 +20,24 @@ class LowFrame
   end
 
   def render
+    return if @paused
     return unless @last_frame.nil? || (current_timestamp - @last_frame) >= @frame_time
 
     @last_frame = current_timestamp
     @renderer.render(screen_size: @screen_size)
+  end
+
+  # Stops rendering so that output isn't replaced by the next frame.
+  def pause
+    @paused = true
+  end
+
+  def resume
+    @paused = false
+  end
+
+  def paused?
+    @paused == true
   end
 
   def setup

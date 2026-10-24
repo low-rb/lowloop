@@ -25,6 +25,20 @@ RSpec.describe LowFrame do
     end
   end
 
+  describe '#pause' do
+    let(:fps) { 10 }
+
+    it 'stops rendering until resumed' do
+      low_frame.pause
+      low_frame.render
+      expect(renderer).not_to have_received(:render)
+
+      low_frame.resume
+      low_frame.render
+      expect(renderer).to have_received(:render).once
+    end
+  end
+
   describe '#resize' do
     let(:fps) { 10 }
 
