@@ -10,7 +10,8 @@ module Low
         if file_body
           content_length = response.body.file.size
         else
-          body_data = response.body.read || ''
+          # A response can have no body, like a node returning "Status[201]", and "join" reads every chunk of a body.
+          body_data = response.body&.join || ''
           content_length = body_data.bytesize
         end
 

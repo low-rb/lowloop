@@ -46,4 +46,23 @@ RSpec.describe Low::ResponseBuilder do
       expect(output).to include("cache-control: no-cache\r\n")
     end
   end
+
+  context 'without a body' do
+    let(:response) { Protocol::HTTP::Response.new('HTTP/1.1', 201, Protocol::HTTP::Headers.new, nil) }
+
+    it 'writes the status with an empty body' do
+      respond
+      expect(output).to start_with("HTTP/1.1 201\r\n")
+      expect(output).to end_with("Content-Length: 0\r\nConnection: keep-alive\r\n\r\n")
+    end
+  end
+
+  context 'with a body of many chunks' do
+    let(:response) { Protocol::HTTP::Response.new('HTTP/1.1', 200, Protocol::HTTP::Headers.new, Protocol::HTTP::Body::Buffered.new(%w[Deer to be different])) }
+
+    it 'writes every chunk' do
+      respond
+      expect(output).to end_with("\r\n\r\nDeertobedifferent")
+    end
+  end
 end

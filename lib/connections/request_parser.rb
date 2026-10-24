@@ -66,10 +66,11 @@ module Low
       def parse_body(stream: IO::Stream::Generic, method: String, headers: ::Protocol::HTTP::Headers)
         return nil unless %w[POST PUT PATCH].include?(method)
 
-        content_length = headers['content-length']&.first&.to_i
-        return nil unless content_length&.positive?
+        # A single value header like content-length is a String.
+        content_length = headers['content-length'].to_i
+        return nil unless content_length.positive?
 
-        stream.read(content_length)
+        ::Protocol::HTTP::Body::Buffered.wrap(stream.read(content_length))
       end
     end
   end
