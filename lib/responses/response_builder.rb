@@ -28,6 +28,8 @@ module Low
         else
           socket.write(head << body_data)
         end
+      ensure
+        response.body.close if file_body
       end
 
       private

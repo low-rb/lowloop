@@ -57,6 +57,24 @@ RSpec.describe Low::ResponseBuilder do
     end
   end
 
+  context 'with a file body' do
+    let(:file) { File.open('./spec/fixtures/config.yaml', 'rb') }
+    let(:response) do
+      Protocol::HTTP::Response.new('HTTP/1.1', 200, Protocol::HTTP::Headers.new, Protocol::HTTP::Body::File.new(file))
+    end
+
+    it 'closes the file after writing it' do
+      respond
+      expect(file).to be_closed
+    end
+
+    it 'closes the file when the socket fails' do
+      allow(socket).to receive(:write).and_raise(Errno::EPIPE)
+      expect { respond }.to raise_error(Errno::EPIPE)
+      expect(file).to be_closed
+    end
+  end
+
   context 'with a body' do
     let(:response) { response_with([['content-type', 'text/html']]) }
 
