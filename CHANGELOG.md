@@ -5,6 +5,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 Minor features that don't break backwards compatibility are released as patches.
 
+## 0.8.6
+
+### Added
+
+- Files are sent with when they last changed, and a browser whose copy is current is answered 304 Not Modified
+- The app decides how its files are cached with `cache_control` in its config, one for every file, like `no-cache`, or one for each extension, sending none without it
+
 ## 0.8.4
 
 ### Fixed
