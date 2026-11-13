@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require 'cgi'
+require 'time'
 require 'protocol/http'
 require 'protocol/http/body/file'
 
@@ -13,11 +14,22 @@ module Low
         Protocol::HTTP::Response.new('HTTP/1.1', 200, headers, body)
       end
 
-      def file(path:, content_type:)
-        headers = Protocol::HTTP::Headers.new([['content-type', content_type]])
+      def file(path:, content_type:, cache_control: nil)
+        headers = Protocol::HTTP::Headers.new([['content-type', content_type], *cache_headers(path, cache_control)])
         file = File.open(path, 'rb')
         body = Protocol::HTTP::Body::File.new(file)
         Protocol::HTTP::Response.new('HTTP/1.1', 200, headers, body)
+      end
+
+      def not_modified(path:, cache_control: nil)
+        headers = Protocol::HTTP::Headers.new(cache_headers(path, cache_control))
+        Protocol::HTTP::Response.new('HTTP/1.1', 304, headers, nil)
+      end
+
+      def cache_headers(path, cache_control)
+        headers = [['last-modified', File.mtime(path).httpdate]]
+        headers << ['cache-control', cache_control] if cache_control
+        headers
       end
 
       # Shows the error and where it happened in debug mode (or show a 500 status).
