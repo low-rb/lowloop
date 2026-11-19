@@ -64,7 +64,9 @@ class LowLoop
 
   private
 
+  # Output is written as it happens, so a log like journald's shows when each error was.
   def start_server
+    $stdout.sync = true
     puts "Starting server @ #{config.host}:#{config.port}" unless config.matrix_mode
 
     server = TCPServer.new(config.host, config.port)

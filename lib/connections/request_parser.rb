@@ -56,8 +56,9 @@ module Low
           line = line.strip
           break if line.empty?
 
-          key, value = line.split(/:\s/, 2)
-          fields << [key, value]
+          # A value can be empty, like "Accept-Language:", or follow the colon without a space.
+          key, value = line.split(':', 2)
+          fields << [key, value.to_s.strip]
         end
 
         ::Protocol::HTTP::Headers.new(fields)

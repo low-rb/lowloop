@@ -36,4 +36,13 @@ RSpec.describe Low::RequestParser do
       expect(request.body).to be_nil
     end
   end
+
+  context 'with an empty header and one without a space after its colon' do
+    let(:request) { parse("GET / HTTP/1.1\r\nHost:localhost\r\nAccept-Language:\r\n\r\n") }
+
+    it 'reads their values' do
+      expect(request.headers['host']).to eq('localhost')
+      expect(request.headers['accept-language']).to eq([])
+    end
+  end
 end

@@ -37,4 +37,16 @@ RSpec.describe Low::ConnectionManager do
       end
     end
   end
+
+  describe '#headers_valid?' do
+    it 'accepts a request with each header once' do
+      expect(manager.headers_valid?(request)).to be(true)
+    end
+
+    it 'refuses a request repeating a header there can only be one of' do
+      request = Low::Support::RequestFactory.request(path: '/', headers: [%w[referer http://a.test], %w[referer http://b.test]])
+
+      expect(manager.headers_valid?(request)).to be(false)
+    end
+  end
 end

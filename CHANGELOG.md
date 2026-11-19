@@ -5,6 +5,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 Minor features that don't break backwards compatibility are released as patches.
 
+## Unreleased
+
+### Fixed
+
+- A header with an empty value, like `Accept-Language:`, or none after its colon closed the connection without a response
+- A request repeating a header there can only be one of, like two Referers, closed the connection without a response, and now gets 400 Bad Request
+- Output is written as it happens, so a log like journald's shows when each error was rather than when the server stopped
+
 ## 0.8.6
 
 ### Added

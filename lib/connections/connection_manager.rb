@@ -36,6 +36,11 @@ module Low
         break if request.nil?
 
         version ||= request.version
+        unless headers_valid?(request)
+          ResponseBuilder.respond(config:, socket:, response: ResponseFactory.status(code: 400), keep_alive: false)
+          break
+        end
+
         keep_alive = keep_alive?(request)
 
         response = respond_to(request:)
@@ -62,6 +67,14 @@ module Low
 
     def request_timeout
       config.request_timeout || DEFAULT_REQUEST_TIMEOUT
+    end
+
+    # Headers there can only be one of, like Referer, raise when read if a request repeats them, so it's a bad request.
+    def headers_valid?(request)
+      request.headers.to_h
+      true
+    rescue Protocol::HTTP::InvalidHeaderError
+      false
     end
 
     private
