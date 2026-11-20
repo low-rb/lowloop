@@ -37,7 +37,7 @@ module Low
 
         version ||= request.version
         unless headers_valid?(request)
-          ResponseBuilder.respond(config:, socket:, response: ResponseFactory.status(code: 400), keep_alive: false)
+          ResponseBuilder.respond(socket:, response: ResponseFactory.status(code: 400), keep_alive: false)
           break
         end
 
@@ -45,7 +45,7 @@ module Low
 
         response = respond_to(request:)
 
-        ResponseBuilder.respond(config:, socket:, response:, keep_alive:)
+        ResponseBuilder.respond(socket:, response:, keep_alive:)
       end
     end
 

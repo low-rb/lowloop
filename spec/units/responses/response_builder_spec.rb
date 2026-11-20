@@ -3,15 +3,13 @@
 require 'stringio'
 require 'protocol/http'
 
-require_relative '../../../lib/support/config_loader'
 require_relative '../../../lib/responses/response_builder'
 
 RSpec.describe Low::ResponseBuilder do
   subject(:respond) do
-    described_class.respond(config:, socket:, response:, keep_alive: true)
+    described_class.respond(socket:, response:, keep_alive: true)
   end
 
-  let(:config) { Low::ConfigLoader.load('./spec/fixtures/config.yaml') }
   let(:socket) { StringIO.new }
   let(:output) { socket.string }
 
@@ -32,6 +30,15 @@ RSpec.describe Low::ResponseBuilder do
     it 'does not write the header name as a stringified array' do
       respond
       expect(output).not_to include('["content-type"')
+    end
+  end
+
+  context 'with any response' do
+    let(:response) { response_with([['content-type', 'text/html']]) }
+
+    it "doesn't send a Host header, which only requests have" do
+      respond
+      expect(output).not_to match(/^host:/i)
     end
   end
 
