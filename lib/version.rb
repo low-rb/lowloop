@@ -2,6 +2,6 @@
 
 module Low
   module Loop
-    VERSION = '0.8.10'
+    VERSION = '0.8.11'
   end
 end
