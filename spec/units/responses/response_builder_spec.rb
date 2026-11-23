@@ -102,4 +102,33 @@ RSpec.describe Low::ResponseBuilder do
       expect(output).to end_with("\r\n\r\nDeertobedifferent")
     end
   end
+
+  context 'with a body that is read rather than buffered' do
+    let(:body) { Protocol::HTTP::Body::Wrapper.new(Protocol::HTTP::Body::Buffered.new(%w[Deer to be])) }
+    let(:response) { Protocol::HTTP::Response.new('HTTP/1.1', 200, Protocol::HTTP::Headers.new, body) }
+
+    it 'writes every chunk with its length' do
+      respond
+      expect(output).to end_with("Content-Length: 8\r\nConnection: keep-alive\r\n\r\nDeertobe")
+    end
+  end
+
+  context 'with UTF-8 in a header and the body' do
+    let(:response) { response_with([['content-disposition', "attachment; filename*=UTF-8''rénne.csv"]], body: 'Rénne 🦌') }
+
+    it 'writes the body with its length in bytes' do
+      respond
+      expect(output.b).to include("filename*=UTF-8''rénne.csv\r\n".b)
+      expect(output.b).to end_with("Content-Length: 11\r\nConnection: keep-alive\r\n\r\n#{'Rénne 🦌'.b}".b)
+    end
+  end
+
+  context 'with a body in another encoding than its headers' do
+    let(:response) { response_with([%w[x-name rénne]], body: 'Rénne'.encode('ISO-8859-1')) }
+
+    it 'writes its bytes as they are' do
+      respond
+      expect(output.b).to end_with("\r\n\r\nR\xE9nne".b)
+    end
+  end
 end

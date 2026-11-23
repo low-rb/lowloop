@@ -5,6 +5,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 Minor features that don't break backwards compatibility are released as patches.
 
+## Unreleased
+
+### Changed
+
+- Responses use less memory. A buffered body is written as its chunks rather than joined into a copy first, and the response is built in one string sized to fit, still sent in a single write. Headers and a body in different encodings no longer raise an encoding error
+
 ## 0.8.9
 
 ### Added
