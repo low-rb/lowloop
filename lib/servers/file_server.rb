@@ -16,7 +16,8 @@ module Low
       @content_types = content_types.transform_keys(&:to_s)
       @cache_control = cache_control
 
-      observers(Events::FileEvent) << FileResponse
+      # A second file server, like one for a framework's own files, shares the one FileResponse rather than adding another.
+      observers(Events::FileEvent) << FileResponse unless responding?
     end
 
     def extension(file_path:)
@@ -47,6 +48,12 @@ module Low
       file = States::FileState.new(path: file_path, content_type: @content_types[extension], cache_control: cache_control(extension))
 
       Events::FileEvent.take(file:, request: event.request)
+    end
+
+    private
+
+    def responding?
+      Observers::Keys[Events::FileEvent].observers.any? { |observer| observer.object == FileResponse }
     end
   end
 end

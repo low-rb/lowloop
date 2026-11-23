@@ -137,4 +137,20 @@ RSpec.describe Low::FileServer do
       end
     end
   end
+  context 'with a second file server for another folder' do
+    let(:framework_files) { described_class.new(web_root: File.expand_path('spec/fixtures', Dir.pwd), content_types:) }
+    let(:request) { Low::Support::RequestFactory.request(path: '/cave.jpg') }
+
+    before { Observers::Keys.reset }
+
+    it 'shares one FileResponse' do
+      [file_server, framework_files]
+      expect(Observers::Keys[Low::Events::FileEvent].observers.size).to eq(1)
+    end
+
+    it "answers a file the other folder doesn't have" do
+      expect([framework_files.request(event: request_event), file_server.request(event: request_event)&.response&.status])
+        .to eq([nil, 200])
+    end
+  end
 end
