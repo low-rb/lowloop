@@ -49,4 +49,16 @@ RSpec.describe Low::ConnectionManager do
       expect(manager.headers_valid?(request)).to be(false)
     end
   end
+  describe '.open_count' do
+    it "counts a connection while it's handled and not after, even when handling it fails" do
+      before_count = described_class.open_count
+      during = nil
+      allow(Low::RequestParser).to receive(:create_stream) do
+        during = described_class.open_count
+        raise IOError
+      end
+      expect { manager.handle_connection(socket: nil) }.to raise_error(IOError)
+      expect([during - before_count, described_class.open_count - before_count]).to eq([1, 0])
+    end
+  end
 end

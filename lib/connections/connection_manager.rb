@@ -11,13 +11,38 @@ module Low
     DEFAULT_KEEP_ALIVE_TIMEOUT = 30
     DEFAULT_REQUEST_TIMEOUT = 10
 
+    class << self
+      # The connections open now. Each is a client like a browser or a proxy such as Caddy, which keeps a few open for
+      # its requests. They're all handled on the event loop's thread, so the count needs no lock.
+      def open_count
+        @open_count ||= 0
+      end
+
+      def opened
+        @open_count = open_count + 1
+      end
+
+      def closed
+        @open_count = open_count - 1
+      end
+    end
+
     # on_error is called with an error raised while responding to a request, before responding with a 500.
     def initialize(config:, on_error: nil)
       @config = config
       @on_error = on_error
     end
 
+    # Counts the connection as open while its requests are served.
     def handle_connection(socket:)
+      self.class.opened
+      serve_requests(socket:)
+    ensure
+      self.class.closed
+    end
+
+    # Answers each request on a connection until the client closes it or stops sending.
+    def serve_requests(socket:)
       stream = RequestParser.create_stream(socket:)
       keep_alive = true
       version = nil
