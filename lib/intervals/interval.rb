@@ -1,0 +1,53 @@
+# frozen_string_literal: true
+
+require 'lowevent'
+
+module Low
+  module Loop
+    # A schedule to observe to run code periodically, like "observe Interval[every_minute: 3]". LowLoop triggers each
+    # observed interval when it's due with the "tick" action, on a worker thread of its own, so a slow job never holds up
+    # requests. With "at_hour: 2" it's only due during that hour of the day.
+    #
+    #   Interval[every_second: 30]
+    #   Interval[every_minute: 3, at_hour: 2]
+    class Interval < Low::Event
+      UNITS = { every_second: 1, every_minute: 60, every_hour: 3600, every_day: 86_400 }.freeze
+
+      attr_reader :seconds, :at_hour, :triggered_at
+
+      def self.[](at_hour: nil, **every)
+        unit, count = every.first
+        raise ArgumentError, "An interval needs one of #{UNITS.keys.join(', ')}" unless every.size == 1 && UNITS.key?(unit)
+
+        new(seconds: UNITS[unit] * count, at_hour:)
+      end
+
+      # The interval is its own key, so its observers are the ones observing the same schedule.
+      def initialize(seconds:, at_hour: nil)
+        super(key: self, action: :tick)
+
+        @seconds = seconds
+        @at_hour = at_hour
+        @triggered_at = nil
+      end
+
+      # Whether it's time to trigger it again, which it is the first time too. It's not due outside its hour.
+      def due?(now)
+        return false if at_hour && now.hour != at_hour
+
+        triggered_at.nil? || now - triggered_at >= seconds
+      end
+
+      # Triggers its observers, counting the next turn from now.
+      def tick(now = Time.now)
+        @triggered_at = now
+        trigger
+      end
+
+      # The same schedule observed in two places is one interval, so both are triggered together.
+      def ==(other) = other.is_a?(Interval) && other.seconds == seconds && other.at_hour == at_hour
+      def eql?(other) = self == other
+      def hash = [self.class, seconds, at_hour].hash
+    end
+  end
+end

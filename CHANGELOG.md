@@ -5,6 +5,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 Minor features that don't break backwards compatibility are released as patches.
 
+## Unreleased
+
+### Added
+
+- `Interval`, a schedule to observe to run code periodically, like `observe Interval[every_minute: 3, at_hour: 2]`. LowLoop triggers each observed interval with the `tick` action when it's due, one at a time on a thread of its own, so a slow job never holds up requests, and one that runs longer than its interval skips the turns it missed
+
 ## 0.8.8
 
 ### Fixed

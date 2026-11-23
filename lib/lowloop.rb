@@ -9,6 +9,7 @@ require 'observers'
 
 require_relative 'responses/response_factory'
 require_relative 'connections/connection_manager'
+require_relative 'intervals/interval_runner'
 require_relative 'servers/file_server'
 require_relative 'support/low_frame'
 
@@ -21,6 +22,7 @@ class LowLoop
     @config = config
     @connection_manager = Low::ConnectionManager.new(config:, on_error: method(:render_error))
     @frame = LowFrame.new(renderer: (renderer if config.matrix_mode), fps: 10, show_output:)
+    @intervals = Low::Loop::IntervalRunner.new(on_error: method(:print_error))
 
     Low::Events::RequestEvent.define do |observers|
       observers << Low::FileServer.new(web_root: config.web_root, content_types: config.content_types, cache_control: config.cache_control)
@@ -31,6 +33,7 @@ class LowLoop
 
   def start
     server = start_server
+    @intervals.start
 
     Async do |task|
       render_frame(task)
@@ -86,16 +89,20 @@ class LowLoop
   end
 
   def render_error(error)
+    print_error(error)
+    pause_frame if @frame.renderer
+  end
+
+  # An error printed without pausing, as an interval's are on its own thread.
+  def print_error(error)
     puts "\nException:"
     puts Paint[error.message, :red]
     puts ''
 
-    if @config.debug_mode
-      puts Paint[error.backtrace&.join("\n"), :blue]
-      puts ''
-    end
+    return unless @config.debug_mode
 
-    pause_frame if @frame.renderer
+    puts Paint[error.backtrace&.join("\n"), :blue]
+    puts ''
   end
 
   # Renderers replaces the screen every frame, so pause it to keep the error on screen until ENTER is pressed.
