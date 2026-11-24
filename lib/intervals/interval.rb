@@ -22,6 +22,13 @@ module Low
         new(seconds: UNITS[unit] * count, at_hour:)
       end
 
+      # Nodes observe an interval like "Interval[every_minute: 1]" rather than this class so they're who observes it.
+      def self.observers(key = nil)
+        return super if key
+
+        Observers.of_keys { |each_key| each_key.is_a?(Interval) }
+      end
+
       # The interval is its own key, so its observers are the ones observing the same schedule.
       def initialize(seconds:, at_hour: nil)
         super(key: self, action: :tick)

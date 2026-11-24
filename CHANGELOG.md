@@ -5,6 +5,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 Minor features that don't break backwards compatibility are released as patches.
 
+## 0.8.13
+
+### Added
+
+- `Interval.observers` lists what observes any interval as nodes observe a schedule like `Interval[every_minute: 1]` rather than the class
+
 ## 0.8.12
 
 ### Added

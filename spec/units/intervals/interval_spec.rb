@@ -11,6 +11,17 @@ RSpec.describe Low::Loop::Interval do
             described_class[every_day: 1]].map(&:seconds)).to eq([30, 180, 7200, 86_400])
   end
 
+  it 'lists what observes any interval with each object once' do
+    Observers::Keys.reset
+    minutely = Class.new { include Observers }
+    daily = Class.new { include Observers }
+    minutely.observe described_class[every_minute: 1]
+    daily.observe described_class[every_day: 1]
+    daily.observe '/about'
+
+    expect(described_class.observers.to_a.map(&:object)).to eq([minutely, daily])
+  end
+
   it 'needs one unit to count in' do
     expect { described_class[at_hour: 2] }.to raise_error(ArgumentError)
     expect { described_class[every_second: 1, every_minute: 1] }.to raise_error(ArgumentError)
