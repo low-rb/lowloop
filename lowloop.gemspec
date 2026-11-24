@@ -32,6 +32,6 @@ Gem::Specification.new do |spec|
   spec.add_dependency 'protocol-http'
   spec.add_dependency 'protocol-url'
 
-  spec.add_dependency 'lowevent', '>= 0.8.6'
+  spec.add_dependency 'lowevent', '>= 0.8.8'
   spec.add_dependency 'lowtype', '~> 1.0'
 end

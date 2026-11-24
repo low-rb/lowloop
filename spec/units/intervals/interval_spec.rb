@@ -22,8 +22,8 @@ RSpec.describe Low::Loop::Interval do
     expect(described_class.observers.to_a.map(&:object)).to eq([minutely, daily])
   end
 
-  it 'starts an event tree of its own each tick' do
-    expect(described_class[every_minute: 1].starts_event_tree?).to be(true)
+  it "starts an event tree of its own each tick kept apart from the app's" do
+    expect([described_class[every_minute: 1].starts_event_tree?, described_class[every_minute: 1].internal?]).to eq([true, true])
   end
 
   it 'needs one unit to count in' do

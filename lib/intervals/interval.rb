@@ -43,6 +43,11 @@ module Low
         true
       end
 
+      # Its trees are kept apart so ticks never push the app's requests out of the event pool.
+      def internal?
+        true
+      end
+
       # Whether it's time to trigger it again, which it is the first time too. It's not due outside its hour.
       def due?(now)
         return false if at_hour && now.hour != at_hour
