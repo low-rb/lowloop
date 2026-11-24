@@ -38,6 +38,11 @@ module Low
         @triggered_at = nil
       end
 
+      # Each tick starts a tree of its own so a job's events are let go like a request's.
+      def starts_event_tree?
+        true
+      end
+
       # Whether it's time to trigger it again, which it is the first time too. It's not due outside its hour.
       def due?(now)
         return false if at_hour && now.hour != at_hour
