@@ -1,7 +1,7 @@
 PATH
   remote: ../lowevent
   specs:
-    lowevent (0.8.8)
+    lowevent (0.8.10)
       lowtype (~> 1.4)
       observers (~> 1.1, >= 1.1.3)
       protocol-http
@@ -24,7 +24,7 @@ PATH
 PATH
   remote: .
   specs:
-    lowloop (0.8.15)
+    lowloop (0.8.16)
       async
       async-http
       io-stream
@@ -184,9 +184,9 @@ CHECKSUMS
   json (3.1.0) sha256=3ce7ccf8fde58960177a3a756c31f292a4c1e1dedee884547096a5b0604e3bd8
   language_server-protocol (3.17.0.6) sha256=5ef2c0c138f8267e1bc631d3328347d354f96724b0af22f2c79516120443b7f0
   lint_roller (1.1.0) sha256=2c0c845b632a7d172cb849cc90c1bce937a28c5c8ccccb50dfd46a485003cc87
-  lowevent (0.8.8)
+  lowevent (0.8.10)
   lowkey (0.7.4) sha256=9f810699d51e119933baf1cf7e33b09c1babb2859025829145dd4bf549ed16dc
-  lowloop (0.8.15)
+  lowloop (0.8.16)
   lowtype (1.7.0)
   method_source (1.1.0) sha256=181301c9c45b731b4769bc81e8860e72f9161ad7d66dd99103c9ab84f560f5c5
   observers (1.1.3)
