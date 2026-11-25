@@ -13,6 +13,8 @@ module Low
     #   Interval[every_minute: 3, at_hour: 2]
     class Interval < Low::Event
       UNITS = { every_second: 1, every_minute: 60, every_hour: 3600, every_day: 86_400 }.freeze
+      # Enough recent turns' outcomes for a dial of up to 60 marks like each second of a minute.
+      KEPT_OUTCOMES = 64
 
       attr_reader :seconds, :at_hour, :triggered_at
 
@@ -37,6 +39,7 @@ module Low
         @seconds = seconds
         @at_hour = at_hour
         @triggered_at = nil
+        @outcomes = {}
       end
 
       # Each tick starts a tree of its own so a job's events are let go like a request's.
@@ -53,16 +56,32 @@ module Low
       # the next. It's not due outside its hour.
       def due?(now)
         @turn ||= turn_at(now)
+        @first_turn ||= @turn
         return false if at_hour && now.hour != at_hour
 
         turn_at(now) > @turn
       end
 
-      # Triggers its observers, marking the turn it's in as run.
+      # Triggers its observers, marking the turn it's in as run and noting whether it ran or failed.
       def tick(now = Time.now)
         @triggered_at = now
         @turn = turn_at(now)
+        note_outcome(:running)
         trigger
+        note_outcome(:ran)
+      rescue StandardError
+        note_outcome(:failed)
+        raise
+      end
+
+      # What happened on the turn under way at that time: running or ran or failed. It's skipped when the turn passed
+      # without running since the app started and nil for a turn still to come or from before.
+      def outcome_at(time, now: Time.now)
+        turn = turn_at(time)
+        return @outcomes[turn] if @outcomes.key?(turn)
+        return unless @first_turn && turn > @first_turn && turn < turn_at(now)
+
+        :skipped
       end
 
       # Whether one of its turns starts at that second.
@@ -76,6 +95,11 @@ module Low
       def hash = [self.class, seconds, at_hour].hash
 
       private
+
+      def note_outcome(outcome)
+        @outcomes[@turn] = outcome
+        @outcomes.shift while @outcomes.size > KEPT_OUTCOMES
+      end
 
       # How many turns have passed since the epoch on the server's clock.
       def turn_at(time)

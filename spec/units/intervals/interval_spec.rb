@@ -62,4 +62,23 @@ RSpec.describe Low::Loop::Interval do
     expect([interval.starts_turn?(noon), interval.starts_turn?(noon + 60), interval.starts_turn?(noon + 600)])
       .to eq([true, false, true])
   end
+
+  it 'notes whether each turn ran or failed or was skipped' do
+    interval = described_class[every_minute: 1]
+    interval.due?(noon)
+    allow(interval).to receive(:trigger)
+    interval.tick(noon + 60)
+    allow(interval).to receive(:trigger).and_raise('Burnt')
+    expect { interval.tick(noon + 180) }.to raise_error('Burnt')
+    expect([noon, noon + 60, noon + 120, noon + 180, noon + 240].map { interval.outcome_at(it, now: noon + 200) })
+      .to eq([nil, :ran, :skipped, :failed, nil])
+  end
+
+  it 'is running while its observers are' do
+    interval = described_class[every_minute: 1]
+    during = nil
+    allow(interval).to receive(:trigger) { during = interval.outcome_at(noon) }
+    interval.tick(noon)
+    expect(during).to eq(:running)
+  end
 end
