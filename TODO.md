@@ -1,3 +1,4 @@
 # TODO
 
 - LowEvent's event pool is a plain hash shared by requests and interval jobs. It hasn't caused problems, but it isn't strictly thread-safe. If interval jobs start triggering many events, that's the place to add a lock.
+- Interval syntax like `Interval[every: 5.seconds, at: 2.hours]` as 0.9. `at:` shifts each turn that far into it so `every: 1.hour, at: 15.minutes` runs at :15 past and the dashboard's pill moves with it. Add small `seconds` `minutes` `hours` and `days` methods on Integer that return seconds and accept anything with `to_i` so ActiveSupport's durations and plain numbers work too. Keep `every_minute: 3` with a warning. `at_hour:` means only during that hour which a shift can't say, so decide whether to keep it as `during: 2.hours` or drop it. Then move Raindeer's `MemoryNode` and sourdough's jobs over and have the dashboard place pills by the shift.
