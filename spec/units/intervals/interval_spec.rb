@@ -37,16 +37,29 @@ RSpec.describe Low::Loop::Interval do
             described_class[every_minute: 3] == described_class[every_minute: 3, at_hour: 2]]).to eq([true, true, false])
   end
 
-  it 'is due the first time, then once its seconds have passed since it was triggered' do
+  it 'waits for the next turn of the clock after it is first seen' do
     interval = described_class[every_minute: 1]
-    due = [interval.due?(noon)]
     allow(interval).to receive(:trigger)
-    interval.tick(noon)
-    expect(due + [interval.due?(noon + 59), interval.due?(noon + 60)]).to eq([true, false, true])
+    due = [interval.due?(noon), interval.due?(noon + 59), interval.due?(noon + 60)]
+    interval.tick(noon + 60)
+    expect(due + [interval.due?(noon + 61), interval.due?(noon + 120)]).to eq([false, false, true, false, true])
+  end
+
+  it 'follows the clock rather than when the app started' do
+    interval = described_class[every_minute: 10]
+    seen = interval.due?(noon + 180)
+    expect([seen, interval.due?(noon + 599), interval.due?(noon + 600)]).to eq([false, false, true])
   end
 
   it 'is only due in its hour' do
     interval = described_class[every_minute: 3, at_hour: 2]
-    expect([interval.due?(noon), interval.due?(Time.new(2026, 11, 24, 2, 30, 0))]).to eq([false, true])
+    one_am = Time.new(2026, 11, 24, 1, 59, 0)
+    expect([interval.due?(one_am), interval.due?(one_am + 60), interval.due?(noon)]).to eq([false, true, false])
+  end
+
+  it 'says which seconds start its turns' do
+    interval = described_class[every_minute: 10]
+    expect([interval.starts_turn?(noon), interval.starts_turn?(noon + 60), interval.starts_turn?(noon + 600)])
+      .to eq([true, false, true])
   end
 end

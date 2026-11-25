@@ -5,6 +5,17 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 Minor features that don't break backwards compatibility are released as patches.
 
+## 0.8.16
+
+### Added
+
+- `Interval#starts_turn?(time)` says whether one of an interval's turns starts at that second
+
+### Changed
+
+- An interval's turns follow the server's clock so `every_minute: 10` runs at :00 :10 :20 and restarting the app doesn't move them
+- An interval waits for its first turn after the app starts rather than running straight away
+
 ## 0.8.15
 
 ### Added

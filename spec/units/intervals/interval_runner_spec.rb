@@ -25,8 +25,8 @@ RSpec.describe Low::Loop::IntervalRunner do
     ticks = []
     job(Low::Loop::Interval[every_second: 2]) { ticks << :fast }
     job(Low::Loop::Interval[every_minute: 1]) { ticks << :slow }
-    [0, 1, 2].each { |second| runner.run_due(now + second) }
-    expect(ticks).to eq(%i[fast slow fast])
+    [0, 1, 2, 60].each { |second| runner.run_due(now + second) }
+    expect(ticks).to eq(%i[fast fast slow])
   end
 
   it 'ticks every observer of the same schedule' do
@@ -34,6 +34,7 @@ RSpec.describe Low::Loop::IntervalRunner do
     job(Low::Loop::Interval[every_minute: 1]) { ticks << :one }
     job(Low::Loop::Interval[every_second: 60]) { ticks << :two }
     runner.run_due(now)
+    runner.run_due(now + 60)
     expect(ticks).to eq(%i[one two])
   end
 
@@ -42,6 +43,7 @@ RSpec.describe Low::Loop::IntervalRunner do
     job(Low::Loop::Interval[every_second: 5]) { raise 'Burnt' }
     job(Low::Loop::Interval[every_second: 7]) { ticks << :baked }
     runner.run_due(now)
+    runner.run_due(now + 35)
     expect([errors.map(&:message).first.include?('Burnt'), ticks]).to eq([true, [:baked]])
   end
 
@@ -49,6 +51,7 @@ RSpec.describe Low::Loop::IntervalRunner do
     ticks = []
     job(Low::Loop::Interval[every_second: 1]) { ticks << :tick }
     runner.run_due(now)
+    runner.run_due(now + 1)
     runner.run_due(now + 10)
     expect(ticks.size).to eq(2)
   end

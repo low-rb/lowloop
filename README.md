@@ -29,6 +29,6 @@ class Cleanup < LowNode
 end
 ```
 
-An interval counts in `every_second`, `every_minute`, `every_hour` or `every_day`, and `at_hour:` keeps it to that hour of the day. The same schedule observed in two places is one interval, so both are ticked together.
+An interval counts in `every_second`, `every_minute`, `every_hour` or `every_day`, and `at_hour:` keeps it to that hour of the day. Its turns follow the server's clock, so `every_minute: 10` runs at :00, :10, :20 and so on. It waits for its first turn after the app starts, so restarting doesn't make it run early. The same schedule observed in two places is one interval, so both are ticked together.
 
 Intervals run one at a time on a thread of their own, so a slow job never holds up requests, and one that runs longer than its interval skips the turns it missed. What a job shares with requests needs to be safe across threads, like a `Thread::Queue`.
