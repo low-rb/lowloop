@@ -74,15 +74,34 @@ module Low
       end
     end
 
-    # Protocol::HTTP reads the Connection header as its lowercase tokens, like ["keep-alive"].
+    # The Connection header is read from the request's fields, as reading it with "request.headers['connection']" would
+    # index and parse every header. Its tokens, like "keep-alive, Upgrade", are matched in any case.
     def keep_alive?(request)
-      tokens = request.headers['connection']
-
       if request.version.to_s.include?('1.0')
-        tokens&.include?('keep-alive') || false
+        connection?(request, KEEP_ALIVE_TOKEN)
       else
-        !tokens&.include?('close')
+        !connection?(request, CLOSE_TOKEN)
       end
+    end
+
+    KEEP_ALIVE_TOKEN = /(?:\A|,)\s*keep-alive\s*(?:,|\z)/i
+    CLOSE_TOKEN = /(?:\A|,)\s*close\s*(?:,|\z)/i
+
+    # Header names are ASCII, so they're compared with casecmp, as casecmp? folds Unicode case into new strings.
+    def connection?(request, token)
+      request.headers.fields.any? do |name, value|
+        name = name.to_s
+        name.length == 10 && name.casecmp('connection') == 0 && value.to_s.match?(token) # rubocop:disable Style/NumericPredicate
+      end
+    end
+
+    # Each header name in lowercase, made once for each name, as most requests send the same few. Only so many are kept,
+    # as a client can send any name.
+    DOWNCASED = {} # rubocop:disable Style/MutableConstant
+    DOWNCASED_LIMIT = 1000
+
+    def downcased(name)
+      DOWNCASED[name] || (DOWNCASED.size < DOWNCASED_LIMIT ? DOWNCASED[name.dup.freeze] = name.downcase.freeze : name.downcase)
     end
 
     def keep_alive_timeout
@@ -94,11 +113,20 @@ module Low
     end
 
     # Headers there can only be one of, like Referer, raise when read if a request repeats them, so it's a bad request.
+    # They're those without a policy for joining them in Protocol::HTTP, which is checked by name, rather than indexing
+    # and parsing every header with "to_h" before anything reads them.
     def headers_valid?(request)
-      request.headers.to_h
+      seen = nil
+      request.headers.fields.each do |field|
+        key = downcased(field.first.to_s)
+        next if Protocol::HTTP::Headers::POLICY[key]
+
+        seen ||= {}
+        return false if seen.key?(key)
+
+        seen[key] = true
+      end
       true
-    rescue Protocol::HTTP::InvalidHeaderError
-      false
     end
 
     private

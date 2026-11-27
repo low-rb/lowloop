@@ -59,7 +59,7 @@ module Low
         method_end = request_line.index(' ') || request_line.length
         path_end = request_line.index(' ', method_end + 1) || request_line.length
 
-        [request_line[0, method_end], request_line[method_end + 1...path_end]]
+        [request_line[0, method_end], request_line[method_end + 1, path_end - method_end - 1]]
       end
 
       def parse_headers(stream: IO::Stream::Generic) -> { ::Protocol::HTTP::Headers }
@@ -74,7 +74,7 @@ module Low
           colon = line.index(':')
           next fields << [line, +''] unless colon
 
-          value = line[colon + 1..]
+          value = line[colon + 1, line.length]
           value.strip!
           fields << [line[0, colon], value]
         end

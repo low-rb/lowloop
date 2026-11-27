@@ -5,6 +5,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 Minor features that don't break backwards compatibility are released as patches.
 
+## Unreleased
+
+### Changed
+
+- A request's headers are checked for repeats, and its Connection header read, from their list, rather than by indexing and parsing every header. A `GET /` makes about 25 fewer objects
+
 ## 0.8.18
 
 ### Changed

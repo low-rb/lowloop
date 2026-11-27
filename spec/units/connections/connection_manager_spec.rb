@@ -48,6 +48,20 @@ RSpec.describe Low::ConnectionManager do
 
       expect(manager.headers_valid?(request)).to be(false)
     end
+
+    it 'refuses one repeated in another case, like Host and host' do
+      request = Low::Support::RequestFactory.request(path: '/', headers: [%w[Host a.test], %w[host b.test]])
+
+      expect(manager.headers_valid?(request)).to be(false)
+    end
+
+    it 'accepts a header that can be repeated, like Accept-Language, without indexing every header' do
+      request = Low::Support::RequestFactory.request(path: '/', headers: [%w[Accept-Language en], %w[accept-language fr]])
+      allow(request.headers).to receive(:to_h).and_call_original
+
+      expect(manager.headers_valid?(request)).to be(true)
+      expect(request.headers).not_to have_received(:to_h)
+    end
   end
   describe '#keep_alive?' do
     def request_with(connection, version: 'HTTP/1.1')
