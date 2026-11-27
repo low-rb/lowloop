@@ -4,6 +4,12 @@ module Low
   class ResponseBuilder
     # Room for the status line and headers of most responses.
     HEAD_CAPACITY = 1024
+    # Headers set from the response itself, rather than from the node's headers.
+    FINAL_HEADERS = %w[content-length connection].freeze
+    KEEP_ALIVE = "Connection: keep-alive\r\n\r\n"
+    CLOSE = "Connection: close\r\n\r\n"
+    # A status code's text, like "200", made once for each code.
+    STATUSES = (100..599).to_h { [it, it.to_s.freeze] }.freeze
 
     class << self
       # TODO: Use Async wherever we can where it doesn't have "Task" requirement.
@@ -41,22 +47,24 @@ module Low
         [body&.join].compact
       end
 
+      # Each part is appended as it is, rather than interpolated into a new string first.
       def write_status_line(head, response)
-        head << "#{response.version} #{response.status}\r\n"
+        status = response.status
+        head << response.version.to_s << ' ' << (STATUSES[status] || status.to_s) << "\r\n"
       end
 
       def write_response_headers(head, response)
         response.headers.fields.each do |key, value|
-          next if %w[content-length connection].include?(key.to_s.downcase)
+          key = key.to_s
+          next if FINAL_HEADERS.any? { key.casecmp?(it) }
 
-          head << "#{key}: #{value}\r\n"
+          head << key << ': ' << value.to_s << "\r\n"
         end
       end
 
       def write_final_headers(head, content_length, keep_alive)
-        head << "Content-Length: #{content_length}\r\n"
-        head << "Connection: #{keep_alive ? 'keep-alive' : 'close'}\r\n"
-        head << "\r\n"
+        head << 'Content-Length: ' << content_length.to_s << "\r\n"
+        head << (keep_alive ? KEEP_ALIVE : CLOSE)
       end
     end
   end

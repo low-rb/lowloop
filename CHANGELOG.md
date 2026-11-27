@@ -5,6 +5,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 Minor features that don't break backwards compatibility are released as patches.
 
+## Unreleased
+
+### Changed
+
+- Requests are read and responses written with fewer new strings and arrays, like reading each header in place and writing a response's head without interpolating each line. A request makes about 28 fewer objects
+
 ## 0.8.17
 
 ### Added

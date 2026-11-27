@@ -74,15 +74,14 @@ module Low
       end
     end
 
+    # Protocol::HTTP reads the Connection header as its lowercase tokens, like ["keep-alive"].
     def keep_alive?(request)
-      tokens = (request.headers['connection'] || []).flat_map do |value|
-        value.split(',').map { |token| token.strip.downcase }
-      end
+      tokens = request.headers['connection']
 
-      if request.version.to_s.downcase.include?('1.0')
-        tokens.include?('keep-alive')
+      if request.version.to_s.include?('1.0')
+        tokens&.include?('keep-alive') || false
       else
-        !tokens.include?('close')
+        !tokens&.include?('close')
       end
     end
 

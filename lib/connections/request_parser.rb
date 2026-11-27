@@ -8,6 +8,9 @@ module Low
   class RequestParser
     include LowType
 
+    # The methods with a body to read. A constant, as a %w[] literal makes a new array of new strings every time.
+    BODY_METHODS = %w[POST PUT PATCH].freeze
+
     class << self
       def create_stream(socket: TCPSocket) -> { IO::Stream::Generic }
         IO::Stream(socket)
@@ -19,11 +22,21 @@ module Low
         result = parse_request(stream:)
         return nil unless result
 
-        method, full_path, = result
+        method, full_path = result
         headers = parse_headers(stream:)
         body = parse_body(stream:, method:, headers:)
 
-        ::Protocol::HTTP::Request.new('http', "#{host}:#{port}", method, full_path, version, headers, body)
+        ::Protocol::HTTP::Request.new('http', authority(host, port), method, full_path, version, headers, body)
+      end
+
+      # Like "127.0.0.1:4133", made once, as a server's host and port don't change.
+      def authority(host, port)
+        last_host, last_port, authority = @authority
+        return authority if last_host == host && last_port == port
+
+        authority = "#{host}:#{port}".freeze
+        @authority = [host, port, authority].freeze
+        authority
       end
 
       private
@@ -36,16 +49,17 @@ module Low
       # :header_3\r\n
       # \r\n
       # :body
+      # The line is read into a new string, so it's stripped in place, and only the method and path are copied out of it.
       def parse_request(stream: IO::Stream::Generic)
         request_line = stream.gets || return
 
-        request_line = request_line.strip
+        request_line.strip!
         return nil if request_line.empty?
 
-        method, full_path, _http_version = request_line.split(' ', 3)
-        path, query = full_path.split('?', 2)
+        method_end = request_line.index(' ') || request_line.length
+        path_end = request_line.index(' ', method_end + 1) || request_line.length
 
-        [method, full_path, path, query]
+        [request_line[0, method_end], request_line[method_end + 1...path_end]]
       end
 
       def parse_headers(stream: IO::Stream::Generic) -> { ::Protocol::HTTP::Headers }
@@ -53,19 +67,23 @@ module Low
 
         # Sometimes returns nil which represents a client disconnect mid-request.
         while (line = stream.gets)
-          line = line.strip
+          line.strip!
           break if line.empty?
 
           # A value can be empty, like "Accept-Language:", or follow the colon without a space.
-          key, value = line.split(':', 2)
-          fields << [key, value.to_s.strip]
+          colon = line.index(':')
+          next fields << [line, +''] unless colon
+
+          value = line[colon + 1..]
+          value.strip!
+          fields << [line[0, colon], value]
         end
 
         ::Protocol::HTTP::Headers.new(fields)
       end
 
       def parse_body(stream: IO::Stream::Generic, method: String, headers: ::Protocol::HTTP::Headers)
-        return nil unless %w[POST PUT PATCH].include?(method)
+        return nil unless BODY_METHODS.include?(method)
 
         # A single value header like content-length is a String.
         content_length = headers['content-length'].to_i

@@ -49,6 +49,24 @@ RSpec.describe Low::ConnectionManager do
       expect(manager.headers_valid?(request)).to be(false)
     end
   end
+  describe '#keep_alive?' do
+    def request_with(connection, version: 'HTTP/1.1')
+      headers = connection ? [['Connection', connection]] : []
+      Low::Support::RequestFactory.request(path: '/', headers:).tap { it.version = version }
+    end
+
+    it 'keeps an HTTP/1.1 connection alive unless it asks to close' do
+      expect(manager.keep_alive?(request_with(nil))).to be(true)
+      expect(manager.keep_alive?(request_with('Close'))).to be(false)
+      expect(manager.keep_alive?(request_with('keep-alive, close'))).to be(false)
+    end
+
+    it 'keeps an HTTP/1.0 connection alive only when it asks to' do
+      expect(manager.keep_alive?(request_with(nil, version: 'HTTP/1.0'))).to be(false)
+      expect(manager.keep_alive?(request_with('Keep-Alive', version: 'HTTP/1.0'))).to be(true)
+    end
+  end
+
   describe '.open_count' do
     it "counts a connection while it's handled and not after, even when handling it fails" do
       before_count = described_class.open_count

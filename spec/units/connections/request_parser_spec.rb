@@ -45,4 +45,20 @@ RSpec.describe Low::RequestParser do
       expect(request.headers['accept-language']).to eq([])
     end
   end
+
+  context 'with a query string' do
+    let(:request) { parse("GET /search?q=rye HTTP/1.1\r\nHost: localhost\r\n\r\n") }
+
+    it 'reads the method, the whole path and the authority' do
+      expect([request.method, request.path, request.authority]).to eq(['GET', '/search?q=rye', 'localhost:4133'])
+    end
+  end
+
+  context 'with a header without a colon' do
+    let(:request) { parse("GET / HTTP/1.1\r\nX-Broken\r\nAccept: text/html\r\n\r\n") }
+
+    it 'keeps it with an empty value and reads the next header' do
+      expect(request.headers.fields).to eq([['X-Broken', ''], ['Accept', 'text/html']])
+    end
+  end
 end
