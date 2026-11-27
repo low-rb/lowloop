@@ -16,13 +16,11 @@ module Low
         IO::Stream(socket)
       end
 
-      def parse(stream: IO::Stream::Generic, host: String, port: Integer, version: nil) -> { ::Protocol::HTTP::Request | nil }
-        version ||= Async::HTTP::Protocol::HTTP.default.protocol_for(stream)::VERSION
-
+      def parse(stream: IO::Stream::Generic, host: String, port: Integer) -> { ::Protocol::HTTP::Request | nil }
         result = parse_request(stream:)
         return nil unless result
 
-        method, full_path = result
+        method, full_path, version = result
         headers = parse_headers(stream:)
         body = parse_body(stream:, method:, headers:)
 
@@ -49,7 +47,7 @@ module Low
       # :header_3\r\n
       # \r\n
       # :body
-      # The line is read into a new string, so it's stripped in place, and only the method and path are copied out of it.
+      # The line is read into a new string so it's stripped in place. A line without a version is an HTTP/1.0 client's.
       def parse_request(stream: IO::Stream::Generic)
         request_line = stream.gets || return
 
@@ -59,7 +57,9 @@ module Low
         method_end = request_line.index(' ') || request_line.length
         path_end = request_line.index(' ', method_end + 1) || request_line.length
 
-        [request_line[0, method_end], request_line[method_end + 1, path_end - method_end - 1]]
+        version = request_line[path_end + 1..]
+        version = 'HTTP/1.0' if version.nil? || version.empty?
+        [request_line[0, method_end], request_line[method_end + 1, path_end - method_end - 1], version]
       end
 
       def parse_headers(stream: IO::Stream::Generic) -> { ::Protocol::HTTP::Headers }

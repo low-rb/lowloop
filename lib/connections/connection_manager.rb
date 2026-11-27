@@ -45,14 +45,13 @@ module Low
     def serve_requests(socket:)
       stream = RequestParser.create_stream(socket:)
       keep_alive = true
-      version = nil
 
       while keep_alive
         break unless socket.wait_readable(keep_alive_timeout)
 
         socket.timeout = request_timeout
         begin
-          request = RequestParser.parse(stream:, host: config.host, port: config.port, version:)
+          request = RequestParser.parse(stream:, host: config.host, port: config.port)
         rescue IO::TimeoutError
           break
         ensure
@@ -60,7 +59,6 @@ module Low
         end
         break if request.nil?
 
-        version ||= request.version
         unless headers_valid?(request)
           ResponseBuilder.respond(socket:, response: ResponseFactory.status(code: 400), keep_alive: false)
           break

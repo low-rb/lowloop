@@ -9,7 +9,7 @@ RSpec.describe Low::RequestParser do
     client.write(raw)
     client.close_write
 
-    described_class.parse(stream: IO::Stream(server), host: 'localhost', port: 4133, version: 'HTTP/1.1')
+    described_class.parse(stream: IO::Stream(server), host: 'localhost', port: 4133)
   end
 
   context 'with a request body' do
@@ -26,6 +26,12 @@ RSpec.describe Low::RequestParser do
 
     it 'has no body' do
       expect(request.body).to be_nil
+    end
+  end
+
+  context 'with an HTTP/1.0 request' do
+    it 'reads its version from the request line' do
+      expect(parse("GET / HTTP/1.0\r\nHost: localhost\r\n\r\n").version).to eq('HTTP/1.0')
     end
   end
 

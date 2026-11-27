@@ -5,6 +5,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 Minor features that don't break backwards compatibility are released as patches.
 
+## Unreleased
+
+### Fixed
+
+- A request's HTTP version is read from its request line. An HTTP/1.0 request without keep-alive was treated as HTTP/1.1 and kept open, so clients like `ab` waited for it to close
+
 ## 0.8.19
 
 ### Changed
